@@ -183,6 +183,112 @@ export async function getPostsByCategory(categoryId: number) {
   }
 }
 
+export async function getAuthors() {
+  if (typeof window === "undefined") {
+    return blogService.getAuthors();
+  }
+  const baseUrl = requireApiUrl();
+  try {
+    if (baseUrl) {
+      const res = await fetch(`${baseUrl}/blog/authors`, {
+        next: { revalidate: 300 },
+      });
+      if (res.ok) return res.json();
+      throw new Error(`Failed to fetch authors: ${res.status}`);
+    }
+    throw new Error("NEXT_PUBLIC_API_URL not configured");
+  } catch (error) {
+    try {
+      const WP =
+        process.env.WORDPRESS_API_URL ||
+        "https://educandoseubolso.blog.br/wp-json/wp/v2";
+      const res = await fetch(`${WP}/users?per_page=100&context=embed`, {
+        next: { revalidate: 300 },
+      });
+      if (!res.ok) throw new Error(`WP users fetch failed: ${res.status}`);
+      const authors = await res.json();
+      return Array.isArray(authors) ? authors : [];
+    } catch (routeError) {
+      console.error(`getAuthors: ${(routeError as Error).message}`);
+      return [];
+    }
+  }
+}
+
+export async function getActiveAuthors() {
+  if (typeof window === "undefined") {
+    return blogService.getActiveAuthors();
+  }
+  // No client: melhor manter consistente com server (usa posts como fonte)
+  try {
+    const WP =
+      process.env.WORDPRESS_API_URL ||
+      "https://educandoseubolso.blog.br/wp-json/wp/v2";
+    const authorsById = new Map<string, any>();
+    for (let page = 1; page <= 10; page++) {
+      const res = await fetch(`${WP}/posts?_embed&per_page=100&page=${page}`, {
+        next: { revalidate: 300 },
+      });
+      if (!res.ok) break;
+      const posts = await res.json();
+      if (!Array.isArray(posts) || posts.length === 0) break;
+      for (const post of posts) {
+        const a = post?._embedded?.author?.[0];
+        if (!a) continue;
+        const id = String(a.id ?? a.slug ?? a.name ?? "");
+        if (!id) continue;
+        if (!authorsById.has(id)) authorsById.set(id, a);
+      }
+    }
+    return Array.from(authorsById.values());
+  } catch (error) {
+    console.error(`getActiveAuthors: ${(error as Error).message}`);
+    return [];
+  }
+}
+
+export async function getAuthorBySlug(slug: string) {
+  if (typeof window === "undefined") {
+    return blogService.getAuthorBySlug(slug);
+  }
+  try {
+    const WP =
+      process.env.WORDPRESS_API_URL ||
+      "https://educandoseubolso.blog.br/wp-json/wp/v2";
+    const res = await fetch(
+      `${WP}/users?per_page=100&context=embed&slug=${encodeURIComponent(slug)}`,
+      { next: { revalidate: 300 } }
+    );
+    if (!res.ok) return null;
+    const arr = await res.json();
+    return Array.isArray(arr) ? arr[0] ?? null : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getPostsByAuthor(authorId: number, perPage = 12, page = 1) {
+  if (typeof window === "undefined") {
+    return blogService.getPostsByAuthor({ authorId, perPage, page });
+  }
+  try {
+    const WP =
+      process.env.WORDPRESS_API_URL ||
+      "https://educandoseubolso.blog.br/wp-json/wp/v2";
+    const res = await fetch(
+      `${WP}/posts?_embed&per_page=${perPage}&page=${page}&author=${encodeURIComponent(authorId)}`,
+      { next: { revalidate: 120 } }
+    );
+    if (!res.ok) return { posts: [], totalPages: 1, totalPosts: 0 };
+    const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
+    const totalPosts = parseInt(res.headers.get("X-WP-Total") || "0", 10);
+    const posts = await res.json();
+    return { posts: Array.isArray(posts) ? posts : [], totalPages, totalPosts };
+  } catch {
+    return { posts: [], totalPages: 1, totalPosts: 0 };
+  }
+}
+
 export function getPostCategories(post: any) {
   const categories = post._embedded?.["wp:term"]?.[0];
   if (!categories || !Array.isArray(categories)) return [];

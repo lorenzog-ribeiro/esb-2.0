@@ -57,53 +57,59 @@ export default function ComparadorAssinaturaPage() {
           </Alert>
         )}
 
-        {/* Form - sempre visível para permitir ajustar parâmetros */}
-        <ComparadorForm onSubmit={handleSubmit} isLoading={isLoading} />
-
-        {/* Results */}
-        {data && (
-          <div className="space-y-6">
-            {/* Comparison Cards */}
-            <ComparadorComparison resultado={data} />
-
-            {/* Detailed Breakdown */}
-            <ComparadorBreakdown
-              compraVista={data.compraVista}
-              financiamento={data.financiamento}
-              assinatura={data.assinatura}
-            />
-
-            {/* Methodology Info */}
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertTitle>Metodologia de Cálculo</AlertTitle>
-              <AlertDescription>
-                <div className="space-y-2 text-sm mt-2">
-                  <p>
-                    <strong>Compra à Vista:</strong> Considera o valor do
-                    veículo, custos de manutenção, seguro, IPVA, licenciamento,
-                    depreciação e custo de oportunidade do capital investido.
-                  </p>
-                  <p>
-                    <strong>Financiamento:</strong> Inclui o valor financiado
-                    com juros, entrada, custos de manutenção, seguro, IPVA,
-                    licenciamento, depreciação e custo de oportunidade da
-                    entrada.
-                  </p>
-                  <p>
-                    <strong>Assinatura:</strong> Soma das mensalidades pagas no
-                    período. Geralmente inclui seguro e manutenção, sem custos
-                    de IPVA e licenciamento.
-                  </p>
-                  <p className="text-xs text-gray-600 mt-3">
-                    O custo líquido considera o valor de revenda do veículo ao
-                    final do período para compra e financiamento.
-                  </p>
-                </div>
-              </AlertDescription>
-            </Alert>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Form - sempre visível para permitir ajustar parâmetros */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit">
+            <ComparadorForm onSubmit={handleSubmit} isLoading={isLoading} />
           </div>
-        )}
+
+          {/* Results */}
+          <div className="lg:col-span-7 space-y-6">
+            {data && (
+              <>
+                {/* Comparison Cards */}
+                <ComparadorComparison resultado={data} />
+
+                {/* Detailed Breakdown */}
+                <ComparadorBreakdown
+                  compraVista={data.compraVista}
+                  financiamento={data.financiamento}
+                  assinatura={data.assinatura}
+                />
+
+                {/* Methodology Info */}
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertTitle>Metodologia de Cálculo</AlertTitle>
+                  <AlertDescription>
+                    <div className="space-y-2 text-sm mt-2">
+                      <p>
+                        <strong>Compra à Vista:</strong> Considera o valor do
+                        veículo, custos de manutenção, seguro, IPVA, licenciamento,
+                        depreciação e custo de oportunidade do capital investido.
+                      </p>
+                      <p>
+                        <strong>Financiamento:</strong> Inclui o valor financiado
+                        com juros, entrada, custos de manutenção, seguro, IPVA,
+                        licenciamento, depreciação e custo de oportunidade da
+                        entrada.
+                      </p>
+                      <p>
+                        <strong>Assinatura:</strong> Soma das mensalidades pagas no
+                        período. Geralmente inclui seguro e manutenção, sem custos
+                        de IPVA e licenciamento.
+                      </p>
+                      <p className="text-xs text-gray-600 mt-3">
+                        O custo líquido considera o valor de revenda do veículo ao
+                        final do período para compra e financiamento.
+                      </p>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

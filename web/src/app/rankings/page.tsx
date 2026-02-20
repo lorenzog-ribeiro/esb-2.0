@@ -1,111 +1,60 @@
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
 import {
-  CreditCard,
-  Shield,
-  Ticket,
-  Building2,
-  Car,
-  TrendingUp,
-  ArrowRight
-} from 'lucide-react';
-import { getRandomAds } from '@/lib/ads';
-import { AdCard } from '@/components/ads/AdCard';
-
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, TrendingUp } from "lucide-react";
+import { RANKINGS } from "@/config/site";
 
 export default function RankingsHubPage() {
-  const rankingAd = getRandomAds(1)[0];
-      const rankings = [
-    {
-      id: 'maquinas-cartao',
-      title: 'Maquininhas de Cartão',
-      description: 'As melhores maquininhas classificadas por taxas, transparência e funcionalidades',
-      icon: CreditCard,
-      href: '/rankings/maquinas-cartao',
-      status: 'available',
-      count: 10,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50 dark:bg-blue-950',
-    },
-    {
-      id: 'seguros',
-      title: 'Seguros de Automóvel',
-      description: 'Ranking das seguradoras por preço, cobertura e atendimento',
-      icon: Shield,
-      href: '/rankings/seguros',
-      status: 'available',
-      count: 10,
-      color: 'text-primary',
-      bgColor: 'bg-accent/10 dark:bg-accent/20',
-    },
-    {
-      id: 'pedagios',
-      title: 'Tags de Pedágio',
-      description: 'Comparação de operadoras de pedágio por taxas e conveniência',
-      icon: Ticket,
-      href: '/rankings/pedagios',
-      status: 'available',
-      count: 5,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50 dark:bg-purple-950',
-    },
-    {
-      id: 'contas-digitais',
-      title: 'Contas Digitais',
-      description: 'Bancos digitais classificados por serviços, tarifas e benefícios',
-      icon: Building2,
-      href: '/rankings/contas-digitais',
-      status: 'available',
-      count: 5,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-950',
-    },
-    {
-      id: 'assinatura-carro',
-      title: 'Assinatura de Carro',
-      description: 'Serviços de assinatura de veículos por custo-benefício',
-      icon: Car,
-      href: '/rankings/assinatura-carro',
-      status: 'available',
-      count: 5,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50 dark:bg-red-950',
-    },
-  ];
-
   return (
-    <div className="container mx-auto py-4 px-4 max-w-7xl">
-      {/* Header */}
-      <div className="mb-8 space-y-2">
+    <main className="container mx-auto py-6 px-4 max-w-7xl">
+      <header className="mb-8 space-y-2">
         <div className="flex items-center gap-3">
-          <TrendingUp className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl md:text-4xl font-bold">
+          <TrendingUp
+            className="h-8 w-8 text-primary shrink-0"
+            aria-hidden
+          />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
             Rankings
           </h1>
         </div>
-        <p className="text-lg text-muted-foreground">
-          Compare e escolha as melhores opções do mercado com nossos rankings baseados em critérios objetivos
+        <p className="text-base sm:text-lg text-muted-foreground">
+          Compare e escolha as melhores opções do mercado com nossos rankings
+          baseados em critérios objetivos
         </p>
-      </div>
+      </header>
 
-      {/* Rankings Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-dense">
-        {rankings.map((ranking) => {
+      <section
+        aria-label="Lista de rankings disponíveis"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 grid-flow-dense"
+      >
+        {RANKINGS.map((ranking) => {
           const Icon = ranking.icon;
+          const bgColor = ranking.iconBg ?? "bg-primary/10";
+          const color = ranking.iconColor ?? "text-primary";
 
           return (
             <Card
               key={ranking.id}
-              className="transition-all hover:shadow-lg hover:border-primary cursor-pointer flex flex-col"
+              className="transition-all hover:shadow-lg hover:border-primary flex flex-col"
             >
               <CardHeader className="flex-1">
                 <div className="flex items-start justify-between mb-2">
-                  <div className={`p-3 rounded-lg ${ranking.bgColor}`}>
-                    <Icon className={`h-6 w-6 ${ranking.color}`} />
+                  <div
+                    className={`p-3 rounded-lg min-w-[48px] min-h-[48px] flex items-center justify-center ${bgColor}`}
+                    aria-hidden
+                  >
+                    <Icon className={`h-6 w-6 ${color}`} />
                   </div>
-                  <Badge className="bg-accent text-accent-foreground">Disponível</Badge>
+                  <Badge className="bg-accent text-accent-foreground shrink-0">
+                    Disponível
+                  </Badge>
                 </div>
                 <CardTitle className="text-xl">{ranking.title}</CardTitle>
                 <CardDescription className="min-h-[48px]">
@@ -117,10 +66,13 @@ export default function RankingsHubPage() {
                   {ranking.count} opções ranqueadas
                 </div>
                 <div className="mt-auto">
-                  <Button className="w-full" asChild>
+                  <Button
+                    className="w-full min-h-[44px]"
+                    asChild
+                  >
                     <Link href={ranking.href}>
                       Ver Ranking
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowRight className="ml-2 h-4 w-4 shrink-0" aria-hidden />
                     </Link>
                   </Button>
                 </div>
@@ -128,27 +80,50 @@ export default function RankingsHubPage() {
             </Card>
           );
         })}
-      </div>
+      </section>
 
-      {/* Methodology Section */}
-      <div className="mt-12 bg-muted p-6 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">Como funcionam os rankings?</h2>
+      <section
+        className="mt-12 bg-muted p-6 rounded-lg"
+        aria-labelledby="methodology-heading"
+      >
+        <h2
+          id="methodology-heading"
+          className="text-xl sm:text-2xl font-bold mb-4"
+        >
+          Como funcionam os rankings?
+        </h2>
         <div className="space-y-3 text-muted-foreground">
           <p>
-            Nossos rankings são baseados em critérios objetivos e ponderados, considerando múltiplos aspectos de cada produto ou serviço:
+            Nossos rankings são baseados em critérios objetivos e ponderados,
+            considerando múltiplos aspectos de cada produto ou serviço:
           </p>
           <ul className="list-disc list-inside space-y-2 ml-4">
-            <li><strong>Critérios financeiros:</strong> Taxas, preços, mensalidades e custos totais</li>
-            <li><strong>Transparência:</strong> Clareza nas informações e ausência de custos ocultos</li>
-            <li><strong>Funcionalidades:</strong> Recursos oferecidos e tecnologia disponível</li>
-            <li><strong>Reputação:</strong> Avaliações de usuários e presença no mercado</li>
-            <li><strong>Atendimento:</strong> Qualidade do suporte ao cliente</li>
+            <li>
+              <strong>Critérios financeiros:</strong> Taxas, preços, mensalidades
+              e custos totais
+            </li>
+            <li>
+              <strong>Transparência:</strong> Clareza nas informações e ausência
+              de custos ocultos
+            </li>
+            <li>
+              <strong>Funcionalidades:</strong> Recursos oferecidos e tecnologia
+              disponível
+            </li>
+            <li>
+              <strong>Reputação:</strong> Avaliações de usuários e presença no
+              mercado
+            </li>
+            <li>
+              <strong>Atendimento:</strong> Qualidade do suporte ao cliente
+            </li>
           </ul>
           <p className="pt-2">
-            Cada ranking possui pesos específicos para seus critérios, priorizando os aspectos mais importantes para cada categoria.
+            Cada ranking possui pesos específicos para seus critérios,
+            priorizando os aspectos mais importantes para cada categoria.
           </p>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

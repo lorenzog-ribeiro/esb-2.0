@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import PostCard from "@/components/Posts";
 import FiltersBlog from "@/components/Filters";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -33,6 +33,8 @@ export function BlogContent({
     initialCategory,
 }: BlogContentProps) {
     const router = useRouter();
+    const pathname = usePathname();
+    const isMountedRef = useRef(true);
     const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
     const WP_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
     const [posts, setPosts] = useState<WordpressPost[]>(initialPosts);
@@ -46,6 +48,13 @@ export function BlogContent({
     const [debouncedTerm, setDebouncedTerm] = useState("");
 
     const ads = useMemo(() => getRandomAds(2), []);
+
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
     useEffect(() => {
         setPosts(initialPosts);
@@ -64,6 +73,9 @@ export function BlogContent({
 
     const updateUrl = useCallback(
         (category?: string | null, page = 1) => {
+            // Só atualiza URL se ainda estivermos na listagem do blog.
+            // Evita que router.replace cancele a navegação para um post (/blog/[slug]).
+            if (pathname !== "/blog") return;
             const params = new URLSearchParams();
             if (searchQuery) params.set("search", searchQuery);
             if (category) params.set("category", category);
@@ -71,7 +83,7 @@ export function BlogContent({
             const query = params.toString();
             router.replace(`/blog${query ? `?${query}` : ""}`, { scroll: false });
         },
-        [router, searchQuery],
+        [router, searchQuery, pathname],
     );
 
     const fetchPosts = useCallback(
@@ -102,7 +114,7 @@ export function BlogContent({
                 setCount(data.totalPosts ?? data.posts?.length ?? 0);
                 setCurrentPage(page);
                 setSelectedCategory(category || undefined);
-                if (!term) updateUrl(category, page);
+                if (!term && isMountedRef.current && pathname === "/blog") updateUrl(category, page);
             } catch (err) {
                 try {
                     const perPage = 9;
@@ -127,7 +139,7 @@ export function BlogContent({
                     setCount(totalPosts ?? wpPosts?.length ?? 0);
                     setCurrentPage(page);
                     setSelectedCategory(category || undefined);
-                    if (!term) updateUrl(category, page);
+                    if (!term && isMountedRef.current && pathname === "/blog") updateUrl(category, page);
                 } catch (fallbackErr) {
                     const message = fallbackErr instanceof Error ? fallbackErr.message : "Erro ao carregar posts";
                     setError(message);
@@ -136,7 +148,7 @@ export function BlogContent({
                 setIsLoading(false);
             }
         },
-        [searchQuery, updateUrl],
+        [searchQuery, updateUrl, categories, pathname],
     );
 
     const handleCategorySelect = (slug: string | null) => {

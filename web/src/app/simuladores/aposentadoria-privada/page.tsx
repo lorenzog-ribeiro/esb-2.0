@@ -25,7 +25,7 @@ export default function AposentadoriaPrivadaPage() {
     }, [router]);
 
     return (
-        <div className="container mx-auto py-8 space-y-8">
+        <div className="container mx-auto py-8 px-4 space-y-8 max-w-7xl">
             <div className="text-center space-y-2">
                 <h1 className="text-4xl font-bold">Simulador de Aposentadoria Privada</h1>
                 <p className="text-gray-600">
@@ -33,26 +33,30 @@ export default function AposentadoriaPrivadaPage() {
                 </p>
             </div>
 
-            <div className="max-w-5xl mx-auto space-y-8">
-                <AposentadoriaForm
-                    onSubmit={async (input) => {
-                        await simular(input);
-                    }}
-                    isLoading={isLoading}
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit">
+                    <AposentadoriaForm
+                        onSubmit={async (input) => {
+                            await simular(input);
+                        }}
+                        isLoading={isLoading}
+                    />
+                </div>
 
-                {isLoading && (
-                    <div className="space-y-4">
-                        <Skeleton className="h-48 w-full" />
-                        <Skeleton className="h-96 w-full" />
-                    </div>
-                )}
+                <div className="lg:col-span-7 space-y-6">
+                    {isLoading && (
+                        <div className="space-y-4">
+                            <Skeleton className="h-48 w-full" />
+                            <Skeleton className="h-96 w-full" />
+                        </div>
+                    )}
 
-                {data && !isLoading && (
-                    <div className="space-y-6">
-                        <AposentadoriaResults data={data} />
-                    </div>
-                )}
+                    {data && !isLoading && (
+                        <div className="space-y-6">
+                            <AposentadoriaResults data={data} />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

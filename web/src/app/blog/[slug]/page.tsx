@@ -151,31 +151,39 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                         <div className="formatted-content space-y-0 text-base">
                             {(() => {
                                 const segments = formattedContent.split(/<\/p>/).filter(seg => seg.trim().length > 0);
-                                const middleIndex = Math.floor(segments.length / 2);
                                 const lastIndex = segments.length - 1;
                                 const nodes: React.ReactNode[] = [];
+                                const mainBanner = bannerAds[0];
+
+                                // Insere o mesmo banner em múltiplos pontos (topo + ao longo do texto).
+                                const bannerAfterIdx = new Set<number>();
+                                if (mainBanner && segments.length > 0) {
+                                    const len = segments.length;
+                                    const candidates = [
+                                        0,
+                                        Math.floor(len / 3),
+                                        Math.floor((2 * len) / 3),
+                                        lastIndex,
+                                    ].filter((i) => i >= 0 && i <= lastIndex);
+
+                                    // Remove duplicados e evita colocar banner cedo demais em textos curtos
+                                    const uniqueSorted = Array.from(new Set(candidates)).sort((a, b) => a - b);
+                                    uniqueSorted.forEach((idx, pos) => {
+                                        const prev = uniqueSorted[pos - 1];
+                                        if (prev === undefined || idx - prev >= 2 || len >= 10) {
+                                            bannerAfterIdx.add(idx);
+                                        }
+                                    });
+                                }
+
                                 segments.forEach((seg, idx) => {
                                     nodes.push(
                                         <div key={`seg-${idx}`} className="wp-content-block" dangerouslySetInnerHTML={{ __html: `${seg}</p>` }} />
                                     );
-                                    if (idx === 0 && bannerAds[0]) {
+                                    if (mainBanner && bannerAfterIdx.has(idx)) {
                                         nodes.push(
-                                            <div key="ad-top" className="not-prose my-6">
-                                                <AdCard ad={bannerAds[0]} />
-                                            </div>
-                                        );
-                                    }
-                                    if (idx === middleIndex && bannerAds[1]) {
-                                        nodes.push(
-                                            <div key="ad-middle" className="not-prose my-6">
-                                                <AdCard ad={bannerAds[1]} />
-                                            </div>
-                                        );
-                                    }
-                                    if (idx === lastIndex && bannerAds[2]) {
-                                        nodes.push(
-                                            <div key="ad-bottom" className="not-prose my-6">
-                                                <AdCard ad={bannerAds[2]} />
+                                            <div key={`ad-banner-${idx}`} className="my-6">
+                                                <AdCard ad={mainBanner} />
                                             </div>
                                         );
                                     }

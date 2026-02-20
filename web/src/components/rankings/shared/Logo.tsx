@@ -1,3 +1,6 @@
+'use client';
+
+import { cn } from '@/utils/utils';
 import { useState, useMemo } from 'react';
 
 interface LogoProps {
@@ -22,7 +25,7 @@ export function Logo({ src, alt, className }: LogoProps) {
     <img
       src={src as string}
       alt={alt}
-      className={className}
+      className={cn('max-w-full h-auto object-contain shrink-0', className)}
       onError={() => setHidden(true)}
     />
   );

@@ -11,3 +11,12 @@ export interface WordpressPost {
   _embedded?: Record<string, unknown>;
   [key: string]: unknown;
 }
+
+export interface WordpressAuthor {
+  id: number | string;
+  name: string;
+  slug?: string;
+  description?: string;
+  link?: string;
+  avatar_urls?: Record<string, string>;
+}

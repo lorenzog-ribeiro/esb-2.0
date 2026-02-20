@@ -47,30 +47,36 @@ export default function FinanciamentoVeiculosPage() {
           </Alert>
         )}
 
-        {/* Form - sempre visível para permitir ajustar parâmetros */}
-        <FinanciamentoVeiculoForm onSubmit={handleSubmit} isLoading={isLoading} />
-
-        {/* Results */}
-        {data && melhorOferta && (
-          <div className="space-y-6">
-            <FinanciamentoVeiculoResults melhorOferta={melhorOferta} />
-
-            {/* All Offers Table */}
-            {data.length > 1 && <FinanciamentoVeiculoOfertas ofertas={data} />}
-
-            {/* Info Alert */}
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Informação</AlertTitle>
-              <AlertDescription>
-                Foram encontradas {data.length} ofertas de financiamento.
-                {data.length > 1
-                  ? ' A melhor oferta está destacada acima.'
-                  : ''}
-              </AlertDescription>
-            </Alert>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Form - sempre visível para permitir ajustar parâmetros */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit">
+            <FinanciamentoVeiculoForm onSubmit={handleSubmit} isLoading={isLoading} />
           </div>
-        )}
+
+          {/* Results */}
+          <div className="lg:col-span-7 space-y-6">
+            {data && melhorOferta && (
+              <>
+                <FinanciamentoVeiculoResults melhorOferta={melhorOferta} />
+
+                {/* All Offers Table */}
+                {data.length > 1 && <FinanciamentoVeiculoOfertas ofertas={data} />}
+
+                {/* Info Alert */}
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Informação</AlertTitle>
+                  <AlertDescription>
+                    Foram encontradas {data.length} ofertas de financiamento.
+                    {data.length > 1
+                      ? ' A melhor oferta está destacada acima.'
+                      : ''}
+                  </AlertDescription>
+                </Alert>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -39,17 +39,20 @@ export default function FinanciamentoImobiliarioPage() {
         </Alert>
       )}
 
-      <div className="space-y-8">
-        <FinanciamentoImobiliarioForm onSubmit={simular} isLoading={isLoading} />
-
-        {melhorOferta && (
-          <>
-            <FinanciamentoImobiliarioResults oferta={melhorOferta} />
-            {data && data.length > 1 && (
-              <FinanciamentoImobiliarioOfertas ofertas={data} />
-            )}
-          </>
-        )}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit">
+          <FinanciamentoImobiliarioForm onSubmit={simular} isLoading={isLoading} />
+        </div>
+        <div className="lg:col-span-7 space-y-6">
+          {melhorOferta && (
+            <>
+              <FinanciamentoImobiliarioResults oferta={melhorOferta} />
+              {data && data.length > 1 && (
+                <FinanciamentoImobiliarioOfertas ofertas={data} />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

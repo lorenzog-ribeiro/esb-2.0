@@ -51,10 +51,10 @@ export default async function Home() {
     const latest = (latestPosts as WordpressPost[]) ?? [];
 
     return (
-        <div className="min-h-screen bg-background" id="blog">
+        <div className="min-h-screen bg-background overflow-x-safe" id="blog">
             <Hero showLatest={false} />
             <Tools />
-            <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-10 space-y-16">
+            <main className="container mx-auto px-4 sm:px-6 lg:px-12 py-10 space-y-16 max-w-[1920px]">
                 <LatestArticles posts={latest} />
                 {topicSections.map(({ topic, category, posts }) => (
                     <TopicSection
@@ -66,7 +66,7 @@ export default async function Home() {
                         categoryName={category.name}
                     />
                 ))}
-            </div>
+            </main>
         </div>
     );
 }

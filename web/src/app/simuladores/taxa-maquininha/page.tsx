@@ -31,10 +31,13 @@ export default function SimuladorTaxaMaquininha() {
         </Alert>
       )}
 
-      <div className="space-y-8">
-        <TaxaMaquininhaForm onSubmit={simular} isLoading={isLoading} />
-
-        {data && <TaxaMaquininhaResults resultado={data} />}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-5 lg:sticky lg:top-24 h-fit">
+          <TaxaMaquininhaForm onSubmit={simular} isLoading={isLoading} />
+        </div>
+        <div className="lg:col-span-7">
+          {data && <TaxaMaquininhaResults resultado={data} />}
+        </div>
       </div>
     </div>
   );

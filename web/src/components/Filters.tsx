@@ -8,9 +8,6 @@ interface FiltersBlogProps {
 
 export default function FiltersBlog({ categories, selectedCategory, onSelect }: FiltersBlogProps) {
     const topCategories = categories.slice(0, 8);
-    const podcastCategory = categories.find((c) => c.slug?.toLowerCase() === "podcast");
-    const hasPodcast = Boolean(podcastCategory);
-    const podcastSlug = podcastCategory?.slug;
     const activeCategoryName =
         selectedCategory ? categories.find((c) => c.slug === selectedCategory)?.name : "Todas";
 
@@ -19,7 +16,7 @@ export default function FiltersBlog({ categories, selectedCategory, onSelect }: 
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <span className="font-semibold text-foreground">Filtros</span>
-                    <span className="text-xs text-muted-foreground">Escolha por tema ou formato</span>
+                    <span className="text-xs text-muted-foreground">Escolha por tema</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="text-xs px-2 py-1 rounded-full bg-muted text-foreground">
@@ -140,58 +137,6 @@ export default function FiltersBlog({ categories, selectedCategory, onSelect }: 
                                 </div>
                             </details>
                         )}
-                    </div>
-
-                    <div className="space-y-2">
-                        <span className="text-sm font-medium">Formatos</span>
-                        <div className="flex flex-wrap gap-2">
-                            <button
-                                onClick={() => {
-                                    onSelect(null);
-                                    const modal = document.getElementById("filters-modal");
-                                    if (modal) modal.classList.add("hidden");
-                                }}
-                                className="px-3 py-2 rounded-md border hover:bg-muted"
-                            >
-                                Artigos
-                            </button>
-                            <button
-                                onClick={() => {
-                                    if (podcastSlug) {
-                                        onSelect(podcastSlug);
-                                    }
-                                    const modal = document.getElementById("filters-modal");
-                                    if (modal) modal.classList.add("hidden");
-                                }}
-                                className={`px-3 py-2 rounded-md border ${
-                                    hasPodcast ? (selectedCategory === podcastSlug ? "bg-accent text-accent-foreground border-accent hover:bg-accent/90" : "hover:bg-muted") : "opacity-50 cursor-not-allowed"
-                                }`}
-                                disabled={!hasPodcast}
-                            >
-                                Podcasts
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <span className="text-sm font-medium">Rankings</span>
-                        <div className="grid grid-cols-2 gap-2">
-                            <a href="/rankings/maquinas-cartao" className="px-3 py-2 rounded-md border hover:bg-muted">
-                                Maquininhas de cartão
-                            </a>
-                            <a href="/rankings/contas-digitais" className="px-3 py-2 rounded-md border hover:bg-muted">
-                                Contas digitais
-                            </a>
-                            <a href="/rankings/assinatura-carro" className="px-3 py-2 rounded-md border hover:bg-muted">
-                                Assinatura de carro
-                            </a>
-                            <a href="/rankings/seguros" className="px-3 py-2 rounded-md border hover:bg-muted">
-                                Seguros de automóvel
-                            </a>
-                            <a href="/rankings/pedagios" className="px-3 py-2 rounded-md border hover:bg-muted">
-                                Tags de pedágio
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
