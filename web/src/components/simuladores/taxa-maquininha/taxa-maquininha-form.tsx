@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
+import {
   TaxaMaquininhaInput,
   TaxaMaquininhaInputSchema,
   FILTROS_LABELS,
@@ -36,6 +45,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { formatCurrency, parseCurrency, maskCurrency } from '@/lib/utils/input-masks';
+import { listarSegmentos, SegmentoItem } from '@/lib/api/taxa-maquininha';
 
 interface TaxaMaquininhaFormProps {
   onSubmit: (data: TaxaMaquininhaInput) => Promise<void>;
@@ -46,6 +56,14 @@ export function TaxaMaquininhaForm({
   onSubmit,
   isLoading = false,
 }: TaxaMaquininhaFormProps) {
+  const [segmentos, setSegmentos] = useState<SegmentoItem[]>([]);
+
+  useEffect(() => {
+    listarSegmentos()
+      .then(setSegmentos)
+      .catch(() => setSegmentos([]));
+  }, []);
+
   const form = useForm<TaxaMaquininhaInput>({
     resolver: zodResolver(TaxaMaquininhaInputSchema),
     defaultValues: {
@@ -53,6 +71,7 @@ export function TaxaMaquininhaForm({
       venda_credito_vista: 3000,
       venda_credito_parcelado: 2000,
       numero_parcelas: 6,
+      segmento: undefined,
       sem_mensalidade: false,
       aceita_cartao_tarja: false,
       sem_fio: false,
@@ -66,7 +85,8 @@ export function TaxaMaquininhaForm({
       ecommerce: false,
       nome: '',
       email: '',
-      email_opt_in_simulation: false,
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
       compartilharDados: true,
       origem: 'web',
     },
@@ -188,6 +208,38 @@ export function TaxaMaquininhaForm({
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="segmento"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Em qual setor sua empresa atua?</FormLabel>
+                    <Select
+                      onValueChange={(v) => field.onChange(v === '_none' ? undefined : Number(v))}
+                      value={field.value != null ? String(field.value) : '_none'}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um setor..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="_none">Não informado</SelectItem>
+                        {segmentos.map((s) => (
+                          <SelectItem key={s.id} value={String(s.id)}>
+                            {s.nome}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      O setor pode influenciar as taxas disponíveis para sua empresa
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             {/* Seção: Filtros */}
@@ -269,52 +321,9 @@ export function TaxaMaquininhaForm({
                   )}
                 />
               </div>
-
-              <div className="rounded-md border p-4 space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email_opt_in_simulation"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Receber resultado por e-mail
-                        </FormLabel>
-                        <CardDescription>
-                          Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                        </CardDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="compartilharDados"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm font-normal">
-                          Aceito compartilhar meus dados para receber ofertas personalizadas
-                        </FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
+
+            <SimulatorEmailOptIn control={form.control} />
 
             <Button
               type="submit"

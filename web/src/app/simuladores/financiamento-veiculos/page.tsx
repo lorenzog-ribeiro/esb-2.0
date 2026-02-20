@@ -6,23 +6,17 @@ import { FinanciamentoVeiculoForm } from '@/components/simuladores/financiamento
 import { FinanciamentoVeiculoResults } from '@/components/simuladores/financiamento-veiculos/financiamento-veiculo-results';
 import { FinanciamentoVeiculoOfertas } from '@/components/simuladores/financiamento-veiculos/financiamento-veiculo-ofertas';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, RotateCcw } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import type { FinanciamentoVeiculoInput } from '@/lib/schemas/financiamento-veiculo.schema';
 
 export default function FinanciamentoVeiculosPage() {
-  const { data, isLoading, error, simular, limpar } =
-    useFinanciamentoVeiculo();
+  const { data, isLoading, error, simular } = useFinanciamentoVeiculo();
 
   // Auto-adjust iframe height when data changes
   useAutoIframeHeight([data, isLoading, error]);
 
   const handleSubmit = async (input: FinanciamentoVeiculoInput) => {
     await simular(input);
-  };
-
-  const handleReset = () => {
-    limpar();
   };
 
   // Get best offer (lowest monthly payment)
@@ -53,25 +47,12 @@ export default function FinanciamentoVeiculosPage() {
           </Alert>
         )}
 
-        {/* Form */}
-        {!data && <FinanciamentoVeiculoForm onSubmit={handleSubmit} isLoading={isLoading} />}
+        {/* Form - sempre visível para permitir ajustar parâmetros */}
+        <FinanciamentoVeiculoForm onSubmit={handleSubmit} isLoading={isLoading} />
 
         {/* Results */}
         {data && melhorOferta && (
           <div className="space-y-6">
-            {/* Reset Button */}
-            <div className="flex justify-end">
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                className="gap-2"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Nova Simulação
-              </Button>
-            </div>
-
-            {/* Best Offer Highlight */}
             <FinanciamentoVeiculoResults melhorOferta={melhorOferta} />
 
             {/* All Offers Table */}

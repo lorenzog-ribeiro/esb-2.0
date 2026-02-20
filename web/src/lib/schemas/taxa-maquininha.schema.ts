@@ -46,6 +46,7 @@ export const TaxaMaquininhaInputSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório'),
   email: z.string().email('Email inválido'),
   email_opt_in_simulation: z.boolean(),
+  email_opt_in_content: z.boolean(),
   compartilharDados: z.boolean(),
   origem: z.string(),
 });
@@ -118,7 +119,7 @@ export const MaquininhaCalculadaSchema = z.object({
   bandeiras: z.array(BandeiraSchema),
   avaliacao: z.number(),
   data_atualizacao: z.string(),
-  url_avaliacao: z.string(),
+  url_avaliacao: z.string().nullable(),
   cruzamentos: z.array(z.any()),
   tem_parceria: z.boolean(),
 });

@@ -155,6 +155,12 @@ export class MaquininhaCalculadaDto {
   NFC: boolean;
 
   @ApiProperty({
+    description: 'Possui conexão Wi-Fi',
+    example: true,
+  })
+  wifi: boolean;
+
+  @ApiProperty({
     description: 'Atende Pessoa Física',
     example: true,
   })

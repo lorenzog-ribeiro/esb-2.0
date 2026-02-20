@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
 import {
   Select,
   SelectContent,
@@ -69,7 +69,8 @@ export function ComparadorForm({
       tempoUsoCarroMeses: 36,
       nome: '',
       email: '',
-      email_opt_in_simulation: false,
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
     },
   });
 
@@ -355,28 +356,7 @@ export function ComparadorForm({
               </div>
             </div>
 
-            <FormField
-                control={form.control}
-                name="email_opt_in_simulation"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                            <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                            />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                            <FormLabel>
-                                Receber resultado por e-mail
-                            </FormLabel>
-                            <CardDescription>
-                                Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                            </CardDescription>
-                        </div>
-                    </FormItem>
-                )}
-            />
+            <SimulatorEmailOptIn control={form.control} />
 
             <Button
               type="submit"

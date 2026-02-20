@@ -40,12 +40,28 @@ export class ResendProvider implements EmailProvider {
       });
 
       if (data.error) {
-        this.logger.error(`Failed to send email to ${maskedTo}: ${data.error.message}`);
+        const msg = data.error.message || '';
+        if (msg.includes('domain is not verified') || msg.includes('dominio')) {
+          this.logger.warn(
+            `Email não enviado (domínio não verificado no Resend): ${maskedTo}. ` +
+            `Verifique em https://resend.com/domains`,
+          );
+          return;
+        }
+        this.logger.error(`Failed to send email to ${maskedTo}: ${msg}`);
         throw new Error(data.error.message);
       }
 
       this.logger.log(`Email sent successfully to ${maskedTo}, id: ${data.data?.id}`);
-    } catch (error) {
+    } catch (error: any) {
+      const msg = error?.message || '';
+      if (msg.includes('domain is not verified') || msg.includes('dominio') || msg.includes('not verified')) {
+        this.logger.warn(
+          `Email não enviado (domínio não verificado): ${maskedTo}. ` +
+          `Configure RESEND_API_KEY e verifique o domínio em https://resend.com/domains`,
+        );
+        return;
+      }
       this.logger.error(`Error sending email to ${maskedTo}: ${error.message}`, error.stack);
       throw error;
     }

@@ -142,7 +142,7 @@ export class ComparadorMaquininhaController {
       ## Limite de Comparação
 
       Mínimo: 2 maquininhas
-      Recomendado: 2-5 maquininhas (para melhor visualização)
+      Máximo: 3 maquininhas
     `,
   })
   @ApiResponse({

@@ -44,6 +44,8 @@ const ContasDigitaisBaseSchema = z.object({
   email: z.string().email('Email inválido'),
 
   email_opt_in_simulation: z.boolean(),
+
+  email_opt_in_content: z.boolean(),
 });
 
 /**

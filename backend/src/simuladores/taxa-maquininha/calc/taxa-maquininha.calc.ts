@@ -28,12 +28,9 @@ export function calcularAntecipacao(
   plano: Plano,
 ): number {
   try {
-    const taxa_desc_credito = new Decimal(
-      plano.taxa_desconto_credito_vista,
-    ).div(100);
-    const taxa_adicional_parc = new Decimal(plano.taxa_adicional_parcela).div(
-      100,
-    );
+    // Taxas já vêm em decimal (0.0399 para 3,99%) do MaquininhasDatabaseService
+    const taxa_desc_credito = new Decimal(plano.taxa_desconto_credito_vista);
+    const taxa_adicional_parc = new Decimal(plano.taxa_adicional_parcela);
 
     // taxa_atual = taxa_desc_credito + (taxa_adicional_parc * (num_parcelas - 1))
     const taxa_atual = taxa_desc_credito.plus(
@@ -45,13 +42,13 @@ export function calcularAntecipacao(
       new Decimal(1).minus(taxa_atual),
     );
 
-    // val_credito_parcelado = val_credito_p - total_taxa_ant
+    // val_credito_parcelado = val_credito_p - total_taxa_ant (fee em centavos)
     const val_credito_parcelado = new Decimal(val_credito_p).minus(
       total_taxa_ant,
     );
 
-    // Retorna multiplicado por 100 (em centavos)
-    return val_credito_parcelado.times(100).toNumber();
+    // Retorna taxa em centavos (val_credito_p já vem em centavos)
+    return val_credito_parcelado.toNumber();
   } catch (error) {
     throw new Error(`Erro ao calcular antecipação simples: ${error.message}`);
   }
@@ -72,12 +69,9 @@ export function calcularAntecipacaoComposto(
   plano: Plano,
 ): number {
   try {
-    const taxa_desc_credito = new Decimal(
-      plano.taxa_desconto_credito_vista,
-    ).div(100);
-    const taxa_adic_parcela = new Decimal(plano.taxa_adicional_parcela).div(
-      100,
-    );
+    // Taxas já vêm em decimal (0.0399 para 3,99%) do MaquininhasDatabaseService
+    const taxa_desc_credito = new Decimal(plano.taxa_desconto_credito_vista);
+    const taxa_adic_parcela = new Decimal(plano.taxa_adicional_parcela);
     const valor_parcela = new Decimal(val_credito_p).div(num_parcelas);
 
     // parcela_liq_taxa_desc = valor_parcela * (1 - taxa_desc_credito)
@@ -118,11 +112,11 @@ export function calcularAntecipacaoComposto(
     // total_tx_ant = total_liq_desc - total_acumulado_tx_ant
     const total_tx_ant = total_liq_desc.minus(total_acumulado_tx_ant);
 
-    // valor_credito_parc = total_tx_ant + resto_liq_desc
+    // valor_credito_parc = total_tx_ant + resto_liq_desc (fee em centavos)
     const valor_credito_parc = total_tx_ant.plus(resto_liq_desc);
 
-    // Retorna multiplicado por 100 (em centavos)
-    return valor_credito_parc.times(100).toNumber();
+    // Retorna taxa em centavos (val_credito_p já vem em centavos)
+    return valor_credito_parc.toNumber();
   } catch (error) {
     throw new Error(`Erro ao calcular antecipação composta: ${error.message}`);
   }

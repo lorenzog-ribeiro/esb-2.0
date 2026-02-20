@@ -25,6 +25,15 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Setup do Banco de Dados
+
+**Se aparecer o erro `Database 'prod_esb' does not exist`**, configure o banco para desenvolvimento local. Veja [docs/SETUP-DATABASE.md](docs/SETUP-DATABASE.md).
+
+Resumo rápido:
+1. Configure `DATABASE_URL` no `.env` apontando para um banco local (ex: `educando_dev`)
+2. Crie o banco: `createdb educando_dev`
+3. Aplique o schema: `pnpm prisma:db:push`
+
 ## Project setup
 
 ```bash

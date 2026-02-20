@@ -13,7 +13,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
@@ -41,7 +41,8 @@ export function AposentadoriaForm({ onSubmit, isLoading }: AposentadoriaFormProp
             incluirCenariosSaque: true,
             nome: '',
             email: '',
-            email_opt_in_simulation: false,
+            email_opt_in_simulation: true,
+            email_opt_in_content: true,
         },
     });
 
@@ -119,29 +120,6 @@ export function AposentadoriaForm({ onSubmit, isLoading }: AposentadoriaFormProp
                                 )}
                             />
                         </div>
-
-                        <FormField
-                            control={form.control}
-                            name="email_opt_in_simulation"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                    <FormControl>
-                                        <Checkbox
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                        <FormLabel>
-                                            Receber resultado por e-mail
-                                        </FormLabel>
-                                        <CardDescription>
-                                            Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                                        </CardDescription>
-                                    </div>
-                                </FormItem>
-                            )}
-                        />
 
                         {/* Modo de Cálculo */}
                         <FormField
@@ -324,6 +302,8 @@ export function AposentadoriaForm({ onSubmit, isLoading }: AposentadoriaFormProp
                                 )}
                             />
                         </div>
+
+                        <SimulatorEmailOptIn control={form.control} />
 
                         <Button type="submit" disabled={isLoading} className="w-full">
                             <Calculator className="mr-2 h-4 w-4" />

@@ -1,6 +1,0 @@
-export declare enum SituacaoEmprego {
-    CLT = "CLT",
-    AUTONOMO = "AUTONOMO",
-    APOSENTADO = "APOSENTADO",
-    SERVIDOR_PUBLICO = "SERVIDOR PUBLICO"
-}

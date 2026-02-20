@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,26 +11,37 @@ import type {
 } from '@/lib/schemas/taxa-maquininha.schema';
 import {
   Trophy,
-  TrendingDown,
   CreditCard,
   Calendar,
   ExternalLink,
   Wifi,
-  Smartphone,
   Printer,
   Building2,
   Star,
-  Clock,
   CheckCircle2,
-  XCircle,
+  ChevronDown,
 } from 'lucide-react';
 
 interface TaxaMaquininhaResultsProps {
   resultado: TaxaMaquininhaOutput;
 }
 
+const ITEMS_PER_PAGE = 5;
+
 export function TaxaMaquininhaResults({ resultado }: TaxaMaquininhaResultsProps) {
   const { maquininhas, total, melhor_opcao, input_data } = resultado;
+  const [exibidas, setExibidas] = useState(ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    setExibidas(ITEMS_PER_PAGE);
+  }, [total]);
+
+  const maquininhasVisiveis = maquininhas.slice(0, exibidas);
+  const haMais = exibidas < maquininhas.length;
+
+  const carregarMais = () => {
+    setExibidas((prev) => Math.min(prev + ITEMS_PER_PAGE, maquininhas.length));
+  };
 
   return (
     <div className="space-y-6">
@@ -83,15 +95,32 @@ export function TaxaMaquininhaResults({ resultado }: TaxaMaquininhaResultsProps)
         <h2 className="text-2xl font-bold">
           Comparação de Maquininhas
         </h2>
+        <p className="text-sm text-gray-600">
+          Exibindo {maquininhasVisiveis.length} de {total} maquininhas
+        </p>
 
-        {maquininhas.map((maq, index) => (
+        {maquininhasVisiveis.map((maq, index) => (
           <MaquininhaCard
-            key={maq.id_maq}
+            key={`${maq.id_maq}-${maq.co_cartao}-${index}`}
             maquininha={maq}
             isMelhorOpcao={index === 0}
             ranking={index + 1}
           />
         ))}
+
+        {haMais && (
+          <div className="flex justify-center pt-4">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={carregarMais}
+              className="gap-2"
+            >
+              <ChevronDown className="h-4 w-4" />
+              Carregar mais opções
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -112,6 +141,7 @@ function MaquininhaCard({
     nome,
     empresa,
     logo,
+    imagem_maquina,
     valor_mensal,
     valor_mensalidade,
     dias_debito,
@@ -136,8 +166,31 @@ function MaquininhaCard({
   return (
     <Card className={isMelhorOpcao ? 'border-primary/50 shadow-lg' : ''}>
       <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
+        <div className="flex items-start justify-between gap-4">
+          {/* Logo e imagem da maquininha */}
+          <div className="flex shrink-0 gap-3">
+            {logo && (
+              <div className="relative h-12 w-16 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logo}
+                  alt={`Logo ${empresa}`}
+                  className="h-full w-full object-contain p-1"
+                />
+              </div>
+            )}
+            {imagem_maquina && (
+              <div className="relative h-16 w-20 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagem_maquina}
+                  alt={nome}
+                  className="h-full w-full object-contain p-1"
+                />
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               {isMelhorOpcao && (
                 <Badge variant="default" className="bg-primary">

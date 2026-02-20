@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   HttpCode,
   HttpStatus,
@@ -17,6 +18,7 @@ import {
 import { TaxaMaquininhaService } from './taxa-maquininha.service';
 import { SimularTaxaMaquininhaDto } from './dto/simular-taxa-maquininha.dto';
 import { ResultadoTaxaMaquininhaDto } from './dto/resultado-taxa-maquininha.dto';
+import { SEGMENTOS } from './data/segmentos.data';
 
 @ApiTags('Taxa Maquininha')
 @Controller('simuladores/taxa-maquininha')
@@ -24,6 +26,23 @@ export class TaxaMaquininhaController {
   private readonly logger = new Logger(TaxaMaquininhaController.name);
 
   constructor(private readonly taxaMaquininhaService: TaxaMaquininhaService) {}
+
+  @Get('segmentos')
+  @ApiOperation({
+    summary: 'Listar segmentos/setores de atuação',
+    description: 'Retorna a lista de segmentos disponíveis para seleção no simulador',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de segmentos',
+    schema: {
+      type: 'array',
+      items: { type: 'object', properties: { id: { type: 'number' }, nome: { type: 'string' } } },
+    },
+  })
+  listarSegmentos(): { id: number; nome: string }[] {
+    return SEGMENTOS;
+  }
 
   @Post('simular')
   @HttpCode(HttpStatus.OK)

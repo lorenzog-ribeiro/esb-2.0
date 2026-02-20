@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
@@ -71,6 +71,8 @@ export function FinanciamentoVeiculoForm({
       tipoVeiculo: TipoVeiculo.NOVO,
       nome: '',
       email: '',
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
     },
   });
 
@@ -304,28 +306,7 @@ export function FinanciamentoVeiculoForm({
               />
             </div>
 
-            <FormField
-                control={form.control}
-                name="email_opt_in_simulation"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                            <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                            />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                            <FormLabel>
-                                Receber resultado por e-mail
-                            </FormLabel>
-                            <CardDescription>
-                                Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                            </CardDescription>
-                        </div>
-                    </FormItem>
-                )}
-            />
+            <SimulatorEmailOptIn control={form.control} />
 
             <Button
               type="submit"

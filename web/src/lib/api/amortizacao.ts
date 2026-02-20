@@ -15,6 +15,7 @@ export const amortizacaoSacApi = {
             nome: d.nome,
             email: d.email,
             email_opt_in_simulation: d.email_opt_in_simulation,
+            email_opt_in_content: (d as any).email_opt_in_content ?? true,
         };
 
         const extra = (d as any).amortizacaoExtraordinaria ?? 0;

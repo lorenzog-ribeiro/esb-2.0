@@ -84,10 +84,9 @@ export const URLS_REDIRECIONAMENTO = {
     'https://educandoseubolso.blog.br/externo/localiza-meoo-comparador/',
 
   /**
-   * URL para página sobre financiamento de veículos
+   * URL para o Simulador de Financiamento de Veículos (interno)
    */
-  FINANCIAMENTO_URL:
-    'https://educandoseubolso.blog.br/externo/simulador-de-financiamento-compadador-assinatura/',
+  FINANCIAMENTO_URL: '/simuladores/financiamento-veiculos',
 } as const;
 
 /**

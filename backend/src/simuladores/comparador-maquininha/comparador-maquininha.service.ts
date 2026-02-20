@@ -10,7 +10,7 @@ import {
   ListaMaquininhasDto,
   MaquininhaOpcaoDto,
 } from './dto/maquininha-opcao.dto';
-import { MAQUININHAS } from '../taxa-maquininha/data/maquininhas.data';
+import { MaquininhasDatabaseService } from '../maquininhas-data/maquininhas-database.service';
 import { EmailService } from '../../email/email.service';
 
 @Injectable()
@@ -20,19 +20,20 @@ export class ComparadorMaquininhaService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
+    private readonly maquininhasDb: MaquininhasDatabaseService,
   ) {}
 
   /**
-   * Retorna lista de maquininhas disponíveis para comparação
+   * Retorna lista de maquininhas disponíveis para comparação (do banco de dados)
    *
    * @returns Lista com id, nome, empresa e logo de cada maquininha ativa
    */
   async listarMaquinhasDisponiveis(): Promise<ListaMaquininhasDto> {
     try {
-      this.logger.log('Fetching available card machines for comparison');
+      this.logger.log('Fetching available card machines from database');
 
-      // Filtrar apenas maquininhas ativas
-      const maquininhasAtivas = MAQUININHAS.filter((m) => m.ativo);
+      const maquininhasAtivas =
+        await this.maquininhasDb.getMaquininhasAtivas();
 
       const maquininhasOpcoes: MaquininhaOpcaoDto[] = maquininhasAtivas.map(
         (m) => ({
@@ -42,9 +43,6 @@ export class ComparadorMaquininhaService {
           logo: m.empresa.logo,
         }),
       );
-
-      // Ordenar por nome para melhor UX
-      maquininhasOpcoes.sort((a, b) => a.nome.localeCompare(b.nome));
 
       this.logger.log(
         `Found ${maquininhasOpcoes.length} active card machines available for comparison`,
@@ -65,6 +63,7 @@ export class ComparadorMaquininhaService {
    *
    * Versão simplificada focada em comparação de features, sem cálculo de custos
    * Útil para quando o usuário quer comparar especificações técnicas
+   * Dados carregados do banco de dados.
    *
    * @param dto - IDs das maquininhas a comparar
    * @returns Características de cada maquininha para comparação
@@ -77,9 +76,10 @@ export class ComparadorMaquininhaService {
       const redactedDto = { ...dto, email: '***', nome: '***' };
       this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
-      // Buscar maquininhas por ID
-      const maquininhas = MAQUININHAS.filter(
-        (m) => dto.maquininhas_ids.includes(m.id) && m.ativo,
+      const maquininhasAtivas =
+        await this.maquininhasDb.getMaquininhasAtivas();
+      const maquininhas = maquininhasAtivas.filter((m) =>
+        dto.maquininhas_ids.includes(m.id),
       );
 
       if (maquininhas.length === 0) {

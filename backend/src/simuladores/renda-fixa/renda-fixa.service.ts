@@ -1,7 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { AxiosResponse } from 'axios';
 import Decimal from 'decimal.js';
 import { SimularRendaFixaDto } from './dto/simular-renda-fixa.dto';
 import {
@@ -25,21 +22,14 @@ import {
   API_TO_SYSTEM_MAP,
 } from './clients/renda-fixa-api.client';
 import { EmailService } from '../../email/email.service';
-
-/**
- * Interface para resposta da API do Banco Central
- */
-interface BancoCentralApiResponse {
-  data: string;
-  valor: string;
-}
+import { EconomicRatesService } from '../../shared/economic-rates/economic-rates.service';
 
 @Injectable()
 export class RendaFixaService {
   private readonly logger = new Logger(RendaFixaService.name);
 
   constructor(
-    private readonly httpService: HttpService,
+    private readonly economicRates: EconomicRatesService,
     private readonly prisma: PrismaService,
     private readonly rendaFixaApiClient: RendaFixaApiClient,
     private readonly emailService: EmailService,
@@ -63,15 +53,12 @@ export class RendaFixaService {
       const redactedDto = { ...dto, email: '***', nome: '***' };
       this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
-      // Buscar taxas atualizadas das APIs do Banco Central
-      const [selicAnual, cdiAnual, trMensal] = await Promise.all([
-        this.obterSelicAtual(),
-        this.obterCdiAtual(),
-        this.obterTrMensal(),
-      ]);
+      // Taxas macroeconômicas via EconomicRatesService (BCB + cache + fallback)
+      const rates = await this.economicRates.getRates();
+      const { selicAnual, cdiAnual, trMensal } = rates;
 
       this.logger.debug(
-        `Economic rates: Selic=${selicAnual}%, CDI=${cdiAnual}%, TR=${trMensal}`,
+        `Economic rates: Selic=${selicAnual}%, CDI=${cdiAnual}%, TR=${trMensal} (factor=${rates.trFactor})`,
       );
 
       // CRITICAL: Call external API FIRST to get CDB and LCI values (as legacy does)
@@ -177,116 +164,6 @@ export class RendaFixaService {
       data_vencto: oferta.data_vencto,
       vlr: oferta.vlr,
     }));
-  }
-
-  /**
-   * Obtém a taxa Selic atual da API do Banco Central
-   * Série 432 - Meta para Taxa Selic fixada pelo Copom
-   */
-  private async obterSelicAtual(): Promise<number> {
-    try {
-      const url =
-        'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/1?formato=json';
-
-      const response: AxiosResponse<BancoCentralApiResponse[]> =
-        await firstValueFrom(
-          this.httpService.get<BancoCentralApiResponse[]>(url, {
-            timeout: 5000, // 5 seconds timeout
-          }),
-        );
-      const valorStr = response.data[0]?.valor?.replace(',', '.');
-
-      if (!valorStr) {
-        throw new Error('Selic value not found in API response');
-      }
-
-      const valor = parseFloat(valorStr);
-      this.logger.debug(`Selic obtained from BCB: ${valor}%`);
-      return valor;
-    } catch (error) {
-      this.logger.warn(
-        'Failed to fetch Selic from BCB, using fallback',
-        error.message,
-      );
-      return 13.75; // Fallback
-    }
-  }
-
-  /**
-   * Obtém a taxa CDI atual da API do Banco Central
-   * Série 12 - Taxa de juros - CDI
-   */
-  private async obterCdiAtual(): Promise<number> {
-    try {
-      const url =
-        'https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados/ultimos/1?formato=json';
-
-      const response: AxiosResponse<BancoCentralApiResponse[]> =
-        await firstValueFrom(
-          this.httpService.get<BancoCentralApiResponse[]>(url, {
-            timeout: 5000, // 5 seconds timeout
-          }),
-        );
-      const valorStr = response.data[0]?.valor?.replace(',', '.');
-
-      if (!valorStr) {
-        throw new Error('CDI value not found in API response');
-      }
-
-      // A API retorna CDI diário, precisamos converter para anual
-      // Fórmula: ((1 + CDI_diario/100)^252) - 1) * 100
-      const cdiDiario = parseFloat(valorStr);
-      const cdiAnual = (Math.pow(1 + cdiDiario / 100, 252) - 1) * 100;
-
-      this.logger.debug(
-        `CDI obtained from BCB: ${cdiAnual.toFixed(2)}% (from daily ${cdiDiario}%)`,
-      );
-      return parseFloat(cdiAnual.toFixed(2));
-    } catch (error) {
-      this.logger.warn(
-        'Failed to fetch CDI from BCB, using fallback',
-        error.message,
-      );
-      return 13.65; // Fallback
-    }
-  }
-
-  /**
-   * Obtém a taxa TR mensal da API do Banco Central
-   * Série 226 - Taxa Referencial - TR
-   */
-  private async obterTrMensal(): Promise<number> {
-    try {
-      const url =
-        'https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados/ultimos/1?formato=json';
-
-      const response: AxiosResponse<BancoCentralApiResponse[]> =
-        await firstValueFrom(
-          this.httpService.get<BancoCentralApiResponse[]>(url, {
-            timeout: 5000, // 5 seconds timeout
-          }),
-        );
-      const valorStr = response.data[0]?.valor?.replace(',', '.');
-
-      if (!valorStr) {
-        throw new Error('TR value not found in API response');
-      }
-
-      // A API retorna TR em percentual, converter para decimal
-      const trPercentual = parseFloat(valorStr);
-      const trDecimal = trPercentual / 100;
-
-      this.logger.debug(
-        `TR obtained from BCB: ${trPercentual}% (${trDecimal})`,
-      );
-      return trDecimal;
-    } catch (error) {
-      this.logger.warn(
-        'Failed to fetch TR from BCB, using fallback',
-        error.message,
-      );
-      return 0.0; // Fallback (TR tem sido historicamente próxima de zero)
-    }
   }
 
   /**

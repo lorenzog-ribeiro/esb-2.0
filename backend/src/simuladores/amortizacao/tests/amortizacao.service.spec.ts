@@ -5,6 +5,7 @@ import {
   SistemaAmortizacao,
   TipoAmortizacaoExtraordinaria,
 } from '../enums/sistema-amortizacao.enum';
+import { EconomicRatesService } from '../../../shared/economic-rates/economic-rates.service';
 
 describe('AmortizacaoService', () => {
   let service: AmortizacaoService;
@@ -16,6 +17,14 @@ describe('AmortizacaoService', () => {
         {
           provide: require('../../../prisma/prisma.service').PrismaService,
           useValue: { simulation: { create: jest.fn() } },
+        },
+        {
+          provide: require('../../../email/email.service').EmailService,
+          useValue: { sendSimulationResult: jest.fn() },
+        },
+        {
+          provide: EconomicRatesService,
+          useValue: { getTrFactor: jest.fn().mockResolvedValue(1.002) },
         },
       ],
     }).compile();

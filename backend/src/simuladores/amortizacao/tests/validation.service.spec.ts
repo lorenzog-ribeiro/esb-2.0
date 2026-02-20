@@ -4,10 +4,11 @@ const prismaMock = {
   simulation: { create: jest.fn().mockResolvedValue({ id: 'mock' }) },
 } as any
 const emailMock = { sendSimulationResult: jest.fn() } as any
+const economicRatesMock = { getTrFactor: jest.fn().mockResolvedValue(1.002) } as any
 
 describe('AmortizacaoService validation', () => {
   it('simplified sanity: sem amortização extraordinária', async () => {
-    const svc = new AmortizacaoService(prismaMock, emailMock)
+    const svc = new AmortizacaoService(prismaMock, emailMock, economicRatesMock)
     const input = {
       nome: 'Teste',
       email: 'teste@example.com',

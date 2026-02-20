@@ -13,8 +13,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
 import { RendaFixaInput, RendaFixaInputSchema } from '@/lib/schemas/renda-fixa.schema';
 import { TrendingUp, DollarSign } from 'lucide-react';
 import { formatCurrency, parseCurrency, maskCurrency } from '@/lib/utils/input-masks';
@@ -32,7 +32,8 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
       prazoMeses: 24,
       nome: '',
       email: '',
-      email_opt_in_simulation: false,
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
     },
   });
 
@@ -93,29 +94,6 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
               />
             </div>
 
-            <FormField
-                control={form.control}
-                name="email_opt_in_simulation"
-                render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                            <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                            />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                            <FormLabel>
-                                Receber resultado por e-mail
-                            </FormLabel>
-                            <CardDescription>
-                                Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                            </CardDescription>
-                        </div>
-                    </FormItem>
-                )}
-            />
-
             {/* Parâmetros do Investimento */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -171,6 +149,8 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
                 )}
               />
             </div>
+
+            <SimulatorEmailOptIn control={form.control} />
 
             <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
               {isLoading ? 'Calculando...' : 'Simular Investimentos'}

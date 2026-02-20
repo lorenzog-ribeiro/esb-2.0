@@ -24,6 +24,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
+import {
   ComparadorMaquininhaInput,
   ComparadorMaquininhaInputSchema,
   MaquininhaOpcao,
@@ -60,7 +68,8 @@ export function ComparadorForm({
       maquininhas_ids: [],
       nome: '',
       email: '',
-      email_opt_in_simulation: false,
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
       compartilharDados: true,
       origem: 'web',
     },
@@ -107,11 +116,11 @@ export function ComparadorForm({
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Seleção de Maquininhas */}
+            {/* Seleção de Maquininhas via Dropdowns */}
             <FormField
               control={form.control}
               name="maquininhas_ids"
-              render={() => (
+              render={({ field }) => (
                 <FormItem>
                   <div className="mb-4">
                     <FormLabel className="text-base flex items-center gap-2">
@@ -119,8 +128,8 @@ export function ComparadorForm({
                       Maquininhas para Comparar
                     </FormLabel>
                     <FormDescription>
-                      Selecione de 2 a 5 maquininhas (atualmente:{' '}
-                      {selectedIds.length} selecionadas)
+                      Selecione de 2 a 3 maquininhas. Após cada seleção, um novo
+                      campo aparecerá ao lado.
                     </FormDescription>
                   </div>
 
@@ -142,49 +151,147 @@ export function ComparadorForm({
                     </Alert>
                   )}
 
-                  {/* Maquininhas Grid */}
+                  {/* Dropdowns sequenciais */}
                   {!isLoadingMaquininhas &&
                     !errorMaquininhas &&
                     maquininhasDisponiveis.length > 0 && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {maquininhasDisponiveis.map((maquininha) => (
-                      <FormField
-                        key={maquininha.id}
-                        control={form.control}
-                        name="maquininhas_ids"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={maquininha.id}
-                              className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 hover:bg-accent transition-colors"
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Dropdown 1 - sempre visível */}
+                        <FormItem>
+                          <FormLabel>1ª Maquininha</FormLabel>
+                          <Select
+                            value={
+                              field.value?.[0]
+                                ? String(field.value[0])
+                                : undefined
+                            }
+                            onValueChange={(val) => {
+                              const id = val ? Number(val) : undefined;
+                              const next = [
+                                id,
+                                field.value?.[1],
+                                field.value?.[2],
+                              ].filter((v): v is number => v !== undefined);
+                              field.onChange(next);
+                            }}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Selecione a 1ª maquininha" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {maquininhasDisponiveis
+                                .filter(
+                                  (m) =>
+                                    m.id !== field.value?.[1] &&
+                                    m.id !== field.value?.[2],
+                                )
+                                .map((m) => (
+                                  <SelectItem
+                                    key={m.id}
+                                    value={String(m.id)}
+                                  >
+                                    {m.nome} ({m.empresa})
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+
+                        {/* Dropdown 2 - aparece após selecionar a 1ª */}
+                        {field.value?.[0] && (
+                          <FormItem>
+                            <FormLabel>2ª Maquininha</FormLabel>
+                            <Select
+                              value={
+                                field.value?.[1]
+                                  ? String(field.value[1])
+                                  : undefined
+                              }
+                              onValueChange={(val) => {
+                                const id = val ? Number(val) : undefined;
+                                const next = [
+                                  field.value?.[0],
+                                  id,
+                                  field.value?.[2],
+                                ].filter((v): v is number => v !== undefined);
+                                field.onChange(next);
+                              }}
                             >
                               <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(maquininha.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value, maquininha.id])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== maquininha.id,
-                                          ),
-                                        );
-                                  }}
-                                />
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Selecione a 2ª maquininha" />
+                                </SelectTrigger>
                               </FormControl>
-                              <div className="space-y-1 leading-none flex-1">
-                                <FormLabel className="text-sm font-medium cursor-pointer">
-                                  {maquininha.nome}
-                                </FormLabel>
-                                <FormDescription className="text-xs">
-                                  {maquininha.empresa}
-                                </FormDescription>
-                              </div>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                        ))}
+                              <SelectContent>
+                                {maquininhasDisponiveis
+                                  .filter(
+                                    (m) =>
+                                      m.id !== field.value?.[0] &&
+                                      m.id !== field.value?.[2],
+                                  )
+                                  .map((m) => (
+                                    <SelectItem
+                                      key={m.id}
+                                      value={String(m.id)}
+                                    >
+                                      {m.nome} ({m.empresa})
+                                    </SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
+
+                        {/* Dropdown 3 - aparece após selecionar a 2ª */}
+                        {field.value?.[1] && (
+                          <FormItem>
+                            <FormLabel>3ª Maquininha</FormLabel>
+                            <Select
+                              value={
+                                field.value?.[2]
+                                  ? String(field.value[2])
+                                  : 'none'
+                              }
+                              onValueChange={(val) => {
+                                const id =
+                                  val && val !== 'none' ? Number(val) : undefined;
+                                const next = [
+                                  field.value?.[0],
+                                  field.value?.[1],
+                                  id,
+                                ].filter((v): v is number => v !== undefined);
+                                field.onChange(next);
+                              }}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Selecione a 3ª maquininha" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="none">
+                                  — Nenhuma (comparar apenas 2)
+                                </SelectItem>
+                                {maquininhasDisponiveis
+                                  .filter(
+                                    (m) =>
+                                      m.id !== field.value?.[0] &&
+                                      m.id !== field.value?.[1],
+                                  )
+                                  .map((m) => (
+                                    <SelectItem
+                                      key={m.id}
+                                      value={String(m.id)}
+                                    >
+                                      {m.nome} ({m.empresa})
+                                    </SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                        )}
                       </div>
                     )}
 
@@ -248,52 +355,9 @@ export function ComparadorForm({
                   )}
                 />
               </div>
-
-              <div className="rounded-md border p-4 space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email_opt_in_simulation"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>
-                          Receber resultado por e-mail
-                        </FormLabel>
-                        <CardDescription>
-                          Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                        </CardDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="compartilharDados"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm font-normal">
-                          Aceito compartilhar meus dados para receber ofertas personalizadas
-                        </FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
+
+            <SimulatorEmailOptIn control={form.control} />
 
             <Button
               type="submit"

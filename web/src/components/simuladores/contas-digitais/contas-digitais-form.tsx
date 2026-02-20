@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
+import { SimulatorEmailOptIn } from '../shared/SimulatorEmailOptIn';
 import {
   ContasDigitaisFisicaInput,
   ContasDigitaisJuridicaInput,
@@ -77,7 +78,8 @@ export function ContasDigitaisForm({
       depCheque: false,
       nome: '',
       email: '',
-      email_opt_in_simulation: false,
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
     },
   });
 
@@ -97,7 +99,8 @@ export function ContasDigitaisForm({
       cartaoVirtual: true,
       nome: '',
       email: '',
-      email_opt_in_simulation: false,
+      email_opt_in_simulation: true,
+      email_opt_in_content: true,
     },
   });
 
@@ -554,63 +557,44 @@ export function ContasDigitaisForm({
                 Seus Dados
               </h3>
 
-              <FormField
-                control={form.control}
-                name="nome"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome Completo</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Digite seu nome completo" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      E-mail
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="seu@email.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
                   control={form.control}
-                  name="email_opt_in_simulation"
+                  name="nome"
                   render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                              <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                              />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                              <FormLabel>
-                                  Receber resultado por e-mail
-                              </FormLabel>
-                              <CardDescription>
-                                  Marque esta opção para receber os detalhes da simulação no seu e-mail.
-                              </CardDescription>
-                          </div>
-                      </FormItem>
+                    <FormItem>
+                      <FormLabel>Nome Completo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Digite seu nome completo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-              />
+                />
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        E-mail
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="seu@email.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <SimulatorEmailOptIn control={form.control} />
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>

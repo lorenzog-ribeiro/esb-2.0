@@ -1,7 +1,13 @@
 import { WordpressPost } from "@/types/wordpress";
 
+const USE_STRAPI = process.env.USE_STRAPI === "true";
 const STRAPI_API_URL = process.env.STRAPI_API_URL || "http://localhost:1337/api";
 const WORDPRESS_API_URL = process.env.WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
+
+/** Quando false, pula Strapi e usa WordPress direto (evita ECONNREFUSED se Strapi não estiver rodando) */
+function shouldTryStrapi(): boolean {
+    return USE_STRAPI && !!STRAPI_API_URL;
+}
 
 export interface GetPostsOptions {
     perPage?: number;
@@ -14,6 +20,7 @@ export interface GetPostsOptions {
 export async function getPosts(options: GetPostsOptions = {}) {
     const { perPage = 10, page = 1, search, categoryId, categorySlug } = options;
 
+    if (shouldTryStrapi()) {
     try {
         // Try Strapi first
         const params = new URLSearchParams();
@@ -63,8 +70,9 @@ export async function getPosts(options: GetPostsOptions = {}) {
     } catch (error) {
         console.error("Error fetching from Strapi, falling back to WordPress:", error);
     }
+    }
 
-    // Fallback to WordPress
+    // Fallback to WordPress (ou uso direto quando USE_STRAPI=false)
     try {
         const wpSearch = search ? `&search=${encodeURIComponent(search)}` : "";
         const wpCategory = categoryId ? `&categories=${categoryId}` : "";
@@ -85,6 +93,7 @@ export async function getPosts(options: GetPostsOptions = {}) {
 }
 
 export async function getPostBySlug(slug: string): Promise<WordpressPost | null> {
+    if (shouldTryStrapi()) {
     try {
         // Try Strapi
         const params = new URLSearchParams();
@@ -120,6 +129,7 @@ export async function getPostBySlug(slug: string): Promise<WordpressPost | null>
     } catch (error) {
         console.error("Error fetching post from Strapi:", error);
     }
+    }
 
     // Fallback to WordPress
     try {
@@ -138,6 +148,7 @@ export async function getPostBySlug(slug: string): Promise<WordpressPost | null>
 }
 
 export async function getCategories() {
+    if (shouldTryStrapi()) {
     try {
         // Try Strapi first
         const res = await fetch(`${STRAPI_API_URL}/categories?pagination[pageSize]=100`, {
@@ -155,6 +166,7 @@ export async function getCategories() {
         }
     } catch (error) {
         console.error("Error fetching categories from Strapi:", error);
+    }
     }
 
     // Fallback to WordPress
@@ -178,6 +190,7 @@ export async function getCategories() {
 }
 
 export async function getPageBySlug(slug: string): Promise<WordpressPost | null> {
+    if (shouldTryStrapi()) {
     try {
         // Try Strapi
         const params = new URLSearchParams();
@@ -212,6 +225,7 @@ export async function getPageBySlug(slug: string): Promise<WordpressPost | null>
         }
     } catch (error) {
         console.error("Error fetching page from Strapi:", error);
+    }
     }
 
     // Fallback to WordPress

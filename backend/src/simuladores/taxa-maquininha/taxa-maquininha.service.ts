@@ -7,7 +7,7 @@ import {
   MaquininhaCalculadaDto,
 } from './dto/resultado-taxa-maquininha.dto';
 import { calcularMaq } from './calc/taxa-maquininha.calc';
-import { getMaquininhasAtivas } from './data/maquininhas.data';
+import { MaquininhasDatabaseService } from '../maquininhas-data/maquininhas-database.service';
 import { FiltrosMaquininha } from './interfaces/maquininha.interface';
 import { EmailService } from '../../email/email.service';
 
@@ -18,6 +18,7 @@ export class TaxaMaquininhaService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
+    private readonly maquininhasDb: MaquininhasDatabaseService,
   ) {}
 
   /**
@@ -47,18 +48,23 @@ export class TaxaMaquininhaService {
       // Montar filtros a partir do DTO
       const filtros: FiltrosMaquininha | null = this.montarFiltros(dto);
 
-      // Carregar maquininhas ativas
-      const maquininhas = getMaquininhasAtivas();
+      // Carregar maquininhas do banco (DATABASE_URL via Prisma)
+      const maquininhas = await this.maquininhasDb.getMaquininhasAtivas();
 
       this.logger.debug(
         `Loaded ${maquininhas.length} active card machines from data`,
       );
 
-      // Calcular custos para cada maquininha
+      // O calc espera valores em CENTAVOS (compatível com Django)
+      // Frontend envia em reais (5000 = R$5000)
+      const valCredito = Math.round(dto.venda_credito_vista * 100);
+      const valDebito = Math.round(dto.venda_debito * 100);
+      const valCreditoP = Math.round(dto.venda_credito_parcelado * 100);
+
       const resultados = calcularMaq(
-        dto.venda_credito_vista,
-        dto.venda_debito,
-        dto.venda_credito_parcelado,
+        valCredito,
+        valDebito,
+        valCreditoP,
         dto.numero_parcelas,
         dto.segmento || null,
         filtros,
@@ -68,6 +74,10 @@ export class TaxaMaquininhaService {
       this.logger.log(
         `Calculation completed. Found ${resultados.length} matching machines`,
       );
+
+      // Deriva wifi de tipo_conexoes (Wi-Fi presente na lista)
+      const hasWifi = (conexoes: { nome: string }[]) =>
+        conexoes?.some((c) => c.nome === 'Wi-Fi') ?? false;
 
       // Converter para DTOs
       const maquininhasDtos: MaquininhaCalculadaDto[] = resultados.map((r) => ({
@@ -95,6 +105,7 @@ export class TaxaMaquininhaService {
         chip: r.chip,
         tarja: r.tarja,
         NFC: r.NFC,
+        wifi: hasWifi(r.tipo_conexoes),
         PF: r.PF,
         PJ: r.PJ,
         precisa_de_telefone: r.precisa_de_telefone,

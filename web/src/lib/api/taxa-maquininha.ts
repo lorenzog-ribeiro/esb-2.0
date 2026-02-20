@@ -7,6 +7,22 @@ import {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3030';
 
+export interface SegmentoItem {
+  id: number;
+  nome: string;
+}
+
+/**
+ * Busca a lista de segmentos/setores disponíveis
+ */
+export async function listarSegmentos(): Promise<SegmentoItem[]> {
+  const response = await fetch(`${API_BASE_URL}/simuladores/taxa-maquininha/segmentos`);
+  if (!response.ok) {
+    throw new Error('Erro ao carregar segmentos');
+  }
+  return response.json();
+}
+
 /**
  * Simula taxas de maquininhas de cartão chamando o backend
  *

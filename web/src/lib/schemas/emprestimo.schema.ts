@@ -47,6 +47,8 @@ export const EmprestimoInputSchema = z.object({
 
   email_opt_in_simulation: z.boolean(),
 
+  email_opt_in_content: z.boolean(),
+
   origem: z.string(),
 });
 

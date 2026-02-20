@@ -8,6 +8,7 @@ import { SimulacaoComparativaDto } from './dto/amortizacao-output.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
 import { EmailService } from '../../email/email.service';
+import { EconomicRatesService } from '../../shared/economic-rates/economic-rates.service';
 
 @Injectable()
 export class AmortizacaoService {
@@ -16,6 +17,7 @@ export class AmortizacaoService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
+    private readonly economicRates: EconomicRatesService,
   ) {}
 
   async calcularAmortizacao(
@@ -174,8 +176,9 @@ export class AmortizacaoService {
     const amortizacaoMensalOriginal =
       prazoTotal > 0 ? input.valorFinanciamento / prazoTotal : 0;
 
-    // ---- POR_PRAZO calculation following the original algorithm ----
-    const trEstimada = 1.00116;
+    // ---- POR_PRAZO calculation (paridade Django)
+    // TR via BCB API; fallback 1.002 para compatibilidade com calculos.py
+    const trEstimada = await this.economicRates.getTrFactor();
     const saldoDev = saldoInicial;
     const amortExtra = somaExtra;
 

@@ -8,13 +8,15 @@ export const ComparadorMaquininhaInputSchema = z.object({
   maquininhas_ids: z
     .array(z.number())
     .min(2, 'Selecione pelo menos 2 maquininhas para comparar')
-    .max(5, 'Máximo de 5 maquininhas para comparar'),
+    .max(3, 'Máximo de 3 maquininhas para comparar'),
 
   nome: z.string().min(1, 'Nome é obrigatório'),
 
   email: z.string().email('Email inválido'),
 
   email_opt_in_simulation: z.boolean(),
+
+  email_opt_in_content: z.boolean(),
 
   compartilharDados: z.boolean(),
 

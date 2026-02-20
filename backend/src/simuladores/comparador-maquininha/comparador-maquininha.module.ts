@@ -3,9 +3,10 @@ import { ComparadorMaquininhaController } from './comparador-maquininha.controll
 import { ComparadorMaquininhaService } from './comparador-maquininha.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { EmailModule } from '../../email/email.module';
+import { MaquininhasDataModule } from '../maquininhas-data/maquininhas-data.module';
 
 @Module({
-  imports: [PrismaModule, EmailModule],
+  imports: [PrismaModule, EmailModule, MaquininhasDataModule],
   controllers: [ComparadorMaquininhaController],
   providers: [ComparadorMaquininhaService],
   exports: [ComparadorMaquininhaService],

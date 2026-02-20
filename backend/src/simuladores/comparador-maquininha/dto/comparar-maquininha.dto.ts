@@ -8,23 +8,29 @@ import {
   IsArray,
   IsInt,
   ArrayMinSize,
+  ArrayMaxSize,
   IsNotEmpty,
 } from 'class-validator';
 
 /**
  * DTO para comparação lado a lado de maquininhas
  * Versão simplificada focada em comparação direta
+ * Mínimo 2, máximo 3 maquininhas
  */
 export class CompararMaquininhaDto {
   @ApiProperty({
-    description: 'IDs das maquininhas a comparar (mínimo 2)',
+    description: 'IDs das maquininhas a comparar (mínimo 2, máximo 3)',
     example: [1, 2, 3],
     type: [Number],
     minItems: 2,
+    maxItems: 3,
   })
   @IsArray()
   @ArrayMinSize(2, {
     message: 'É necessário selecionar pelo menos 2 maquininhas para comparar',
+  })
+  @ArrayMaxSize(3, {
+    message: 'Máximo de 3 maquininhas para comparar',
   })
   @IsInt({ each: true })
   @Type(() => Number)

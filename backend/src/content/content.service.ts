@@ -1,10 +1,12 @@
-
-import { Injectable } from '@nestjs/common';
-import { StrapiService } from '../integrations/strapi/strapi.service';
+import { Injectable, Inject } from '@nestjs/common';
+import { CONTENT_SERVICE, IContentService } from './content.interface';
 
 @Injectable()
 export class ContentService {
-  constructor(private readonly strapiService: StrapiService) {}
+  constructor(
+    @Inject(CONTENT_SERVICE)
+    private readonly contentProvider: IContentService,
+  ) {}
 
   async getPosts(options: {
     page?: number;
@@ -12,26 +14,30 @@ export class ContentService {
     search?: string;
     categoryId?: number;
   }) {
-    return this.strapiService.getPosts(options);
+    return this.contentProvider.getPosts(options);
   }
 
   async getPostBySlug(slug: string) {
-    return this.strapiService.getPostBySlug(slug);
+    return this.contentProvider.getPostBySlug(slug);
   }
 
   async getPageBySlug(slug: string) {
-    return this.strapiService.getPageBySlug(slug);
+    return this.contentProvider.getPageBySlug(slug);
   }
 
   async getCategories() {
-    return this.strapiService.getCategories();
+    return this.contentProvider.getCategories();
+  }
+
+  async getPostsByCategory(categorySlugOrId: string | number, limit = 5) {
+    return this.contentProvider.getPostsByCategory(categorySlugOrId, limit);
+  }
+
+  getAssetUrl(path: string): string {
+    return this.contentProvider.getAssetUrl(path);
   }
 
   async getMedia() {
-      // Strapi doesn't have a direct "list all media" API that matches WP's exactly without custom implementation or plugins,
-      // and typically we don't need to list all media for the frontend unless it's a specific gallery feature.
-      // The current frontend uses it? Let's check usage of getMedia in frontend components.
-      // If it's not critical, return empty array.
-      return []; 
+    return this.contentProvider.getMedia();
   }
 }
