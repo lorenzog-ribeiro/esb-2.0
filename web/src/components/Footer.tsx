@@ -63,7 +63,7 @@ export default async function Footer() {
                                 </Link>
                             </Button>
                             <Button variant="secondary" size="icon" className="hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
-                                <Link href="https://www.facebook.com/profile.php?id=100063976607899&locale=pt_BR">
+                                <Link href="https://www.facebook.com/people/Blog-Educando-Seu-Bolso/61554308285348/">
                                     <Facebook className="w-5 h-5" />
                                 </Link>
                             </Button>
@@ -91,7 +91,7 @@ export default async function Footer() {
                             <ul className="space-y-2">
                                 <li>
                                     <a
-                                        href="#"
+                                        href="/rankings/maquinas-cartao"
                                         className="text-muted-foreground hover:text-primary transition-colors duration-200"
                                     >
                                         Máquinas de cartão
@@ -99,7 +99,7 @@ export default async function Footer() {
                                 </li>
                                 <li>
                                     <a
-                                        href="#"
+                                        href="/rankings/contas-digitais"
                                         className="text-muted-foreground hover:text-primary transition-colors duration-200"
                                     >
                                         Contas digitais
@@ -107,26 +107,10 @@ export default async function Footer() {
                                 </li>
                                 <li>
                                     <a
-                                        href="#"
+                                        href="/rankings/assinatura-carro"
                                         className="text-muted-foreground hover:text-primary transition-colors duration-200"
                                     >
                                         Carro por assinatura
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                                    >
-                                        Cartões de crédito
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                                    >
-                                        Empréstimos
                                     </a>
                                 </li>
                             </ul>
@@ -138,7 +122,7 @@ export default async function Footer() {
                             <ul className="space-y-2">
                                 <li>
                                     <a
-                                        href="#"
+                                        href="/simuladores/amortizacao"
                                         className="text-muted-foreground hover:text-primary transition-colors duration-200"
                                     >
                                         Simulador de amortização
@@ -146,34 +130,18 @@ export default async function Footer() {
                                 </li>
                                 <li>
                                     <a
-                                        href="#"
+                                        href="/simuladores/renda-fixa"
                                         className="text-muted-foreground hover:text-primary transition-colors duration-200"
                                     >
-                                        Calculadora de juros
+                                        Simulador de renda fixa
                                     </a>
                                 </li>
                                 <li>
                                     <a
-                                        href="#"
+                                        href="/simuladores/comparador-assinatura"
                                         className="text-muted-foreground hover:text-primary transition-colors duration-200"
                                     >
-                                        Simulador de investimentos
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                                    >
-                                        Comparador de produtos
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                                    >
-                                        Planejador financeiro
+                                        Comparador de carro por assinatura
                                     </a>
                                 </li>
                             </ul>
@@ -189,7 +157,7 @@ export default async function Footer() {
                                 </div>
                                 <div className="flex items-center space-x-3 text-muted-foreground">
                                     <Phone className="w-4 h-4" />
-                                    <span className="text-sm">+55 (31) 99690-8560</span>
+                                    <span className="text-sm">+55 (31) 9 9918-9537</span>
                                 </div>
                                 <div className="flex items-center space-x-3 text-muted-foreground">
                                     <MapPin className="w-4 h-4" />

@@ -81,4 +81,4 @@ describe('Simulators and Rankings (e2e smoke)', () => {
     expect(Array.isArray(res.body.items)).toBe(true);
     expect(res.body.total).toBeGreaterThan(0);
   });
-}
+});

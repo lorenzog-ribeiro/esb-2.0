@@ -1,101 +1,107 @@
+/**
+ * simulation-result.template.ts
+ *
+ * Master Template para emails de resultado de simulacao.
+ *
+ * Composicao:
+ *   renderEmailHeader()             — partial: cabecalho ESB
+ *   renderDataSection(entrada)      — partial: dados de entrada
+ *   renderDataSection(resultado)    — partial: resultados
+ *   renderEmailFooter(relatedPosts) — partial: rodape + posts relacionados
+ *
+ * Posts relacionados sao injetados pelo EmailService via ContentService,
+ * sem URLs hardcoded do WordPress.
+ *
+ * Referencia de design: emails legados do ESB-Bolsito-Microservices
+ * (enviar_email_resultado_* em utils.py de cada app).
+ */
+
 import { SimulationEmailPayload } from '../dto/simulation-email-payload.dto';
+import { renderEmailHeader } from './partials/email-header.partial';
+import { renderEmailFooter, RelatedPost } from './partials/email-footer.partial';
+import { renderDataSection } from './partials/simulation-data-section.partial';
 
-function escapeHtml(unsafe: any): string {
-  if (unsafe === null || unsafe === undefined) return '';
-  const str = String(unsafe);
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+/**
+ * Gera o HTML completo do email de resultado de simulacao.
+ *
+ * @param payload      - Dados da simulacao (tipo, usuario, input, output, resumo)
+ * @param relatedPosts - Posts do blog a exibir no rodape (injetados pelo ContentService)
+ * @returns string com o HTML do email
+ */
+export function generateSimulationEmail(
+  payload: SimulationEmailPayload,
+  relatedPosts: RelatedPost[] = [],
+): string {
+  const { userName, simulationType, input, output, summary, createdAt } =
+    payload;
 
-export function generateSimulationEmail(payload: SimulationEmailPayload): string {
-  const { userName, simulationType, input, output, summary, createdAt } = payload;
-  
-  // Format dates
   const dateStr = new Date(createdAt).toLocaleDateString('pt-BR');
+  const safeName = userName?.trim() || 'Usuario';
+  const safeSummary = summary?.trim() || '';
 
-  // Helper to format object data
-  const formatData = (data: Record<string, any>) => {
-    if (!data) return '<p>N/A</p>';
-    
-    return Object.entries(data)
-      .map(([key, value]) => {
-        // Skip null/undefined
-        if (value === null || value === undefined) return '';
+  const summarySection = safeSummary
+    ? `
+    <div style="background:#eff6ff;border-left:4px solid #1B3A6B;padding:16px;margin-bottom:24px;border-radius:0 6px 6px 0;">
+      <p style="margin:0;font-size:14px;color:#1e3a5f;font-family:sans-serif;">${safeSummary}</p>
+    </div>
+  `
+    : '';
 
-        // Format label from camelCase to Title Case
-        const label = escapeHtml(key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()));
-        
-        let displayValue = value;
-        if (typeof value === 'object') {
-            displayValue = JSON.stringify(value, null, 2);
-        }
-        
-        return `
-          <div style="margin-bottom: 8px;">
-            <strong style="color: #555;">${label}:</strong> 
-            <span>${escapeHtml(displayValue)}</span>
-          </div>
-        `;
-      })
-      .join('');
-  };
-
-  const safeUserName = escapeHtml(userName);
-  const safeSimulationType = escapeHtml(simulationType.replace(/_/g, ' '));
-  const safeSummary = escapeHtml(summary);
+  const header = renderEmailHeader(simulationType);
+  const footer = renderEmailFooter(relatedPosts);
+  const inputSection = renderDataSection('Dados de Entrada', input);
+  const outputSection = renderDataSection('Resultados', output);
 
   return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body { font-family: sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #f8f9fa; padding: 20px; text-align: center; border-bottom: 3px solid #007bff; }
-        .content { padding: 20px 0; }
-        .section { margin-bottom: 25px; background: #fff; padding: 15px; border: 1px solid #eee; border-radius: 5px; }
-        .section-title { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #007bff; }
-        .footer { text-align: center; font-size: 12px; color: #999; margin-top: 30px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>Resultado da Simulação</h1>
-          <p>${safeSimulationType}</p>
-        </div>
-        
-        <div class="content">
-          <p>Olá, <strong>${safeUserName}</strong>!</p>
-          <p>Aqui está o resultado da sua simulação realizada em ${dateStr}.</p>
-          
-          <div class="section">
-            <h3 class="section-title">Resumo</h3>
-            <p>${safeSummary}</p>
-          </div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultado da Simulacao — Educando Seu Bolso</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);"
+        >
+          <!-- CABECALHO -->
+          <tr>
+            <td>${header}</td>
+          </tr>
 
-          <div class="section">
-            <h3 class="section-title">Dados de Entrada</h3>
-            ${formatData(input)}
-          </div>
+          <!-- CORPO -->
+          <tr>
+            <td style="padding:28px 28px 8px;">
+              <p style="font-size:15px;color:#374151;font-family:sans-serif;margin:0 0 8px;">
+                Ola, <strong>${safeName}</strong>!
+              </p>
+              <p style="font-size:13px;color:#6b7280;font-family:sans-serif;margin:0 0 20px;">
+                Aqui esta o resultado da sua simulacao realizada em ${dateStr}.
+              </p>
 
-          <div class="section">
-            <h3 class="section-title">Resultados</h3>
-            ${formatData(output)}
-          </div>
-        </div>
+              ${summarySection}
+              ${inputSection}
+              ${outputSection}
+            </td>
+          </tr>
 
-        <div class="footer">
-          <p>Educando Seu Bolso - Educação Financeira</p>
-          <p>Este é um email automático, por favor não responda.</p>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
+          <!-- RODAPE -->
+          <tr>
+            <td style="padding:0 28px 28px;">
+              ${footer}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getFeaturedImage } from "@/lib/api/wordpress";
+import { formatExcerptHtml } from "@/utils/wordpress-formatter";
 
 async function searchPosts(query: string) {
     const res = await fetch(`${process.env.WORDPRESS_API_URL}/posts?search=${encodeURIComponent(query)}&_embed`);
@@ -46,8 +47,8 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
                                 </Link>
                             </h2>
                             <div
-                                className="text-gray-600"
-                                dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                                className="formatted-content formatted-excerpt text-muted-foreground"
+                                dangerouslySetInnerHTML={{ __html: formatExcerptHtml(post.excerpt?.rendered ?? '') }}
                             />
                         </article>
                     );

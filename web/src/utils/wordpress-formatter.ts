@@ -55,14 +55,24 @@ export function formatWordPressExcerpt(excerpt: string): string {
         // Remove WordPress's default [...] or [&hellip;]
         .replace(/\[&hellip;\]/g, '')
         .replace(/\[\.\.\.\]/g, '')
-
         // Remove common WordPress excerpt artifacts
         .replace(/<p>/g, '')
         .replace(/<\/p>/g, '')
         .replace(/&hellip;/g, '...')
-
         // Clean up and format
         .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/** Limpa HTML de excerpt para exibição (preserva tags, remove artefatos WP) */
+export function formatExcerptHtml(html: string): string {
+    if (!html) return '';
+
+    return html
+        .replace(/\[&hellip;\]/g, '')
+        .replace(/\[\.\.\.\]/g, '')
+        .replace(/&hellip;/g, '...')
+        .replace(/\sstyle="[^"]*"/g, '')
         .trim();
 }
 
@@ -85,37 +95,32 @@ export function formatPostDate(dateString: string): string {
     });
 }
 
+/** Formato DD/MM/YYYY consistente entre server e client (evita hydration mismatch) */
 export function formatPostDateShort(dateString: string): string {
     const date = new Date(dateString);
-
-    return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        timeZone: 'UTC'
-    });
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
 }
 
 export function formatFullPostContent(content: string): string {
     if (!content) return '';
 
     return content
-        .replace(/<!-- wp:paragraph -->/g, '')
-        .replace(/<!-- \/wp:paragraph -->/g, '')
-        .replace(/<!-- wp:heading {"level":([1-6])} -->/g, '')
-        .replace(/<!-- \/wp:heading -->/g, '')
-
-        .replace(/\[gallery ids="([^"]+)"\]/g, (match, ids) => {
-            return `<div class="wp-gallery">${ids.split(',').map((id: string) =>
-                `<img src="your-media-endpoint/${id.trim()}" alt="Gallery image" class="gallery-image" />`
-            ).join('')}</div>`;
-        })
-
-        .replace(/class="wp-block-[^"]*"/g, '')
-        .replace(/class="has-[^"]*"/g, '')
-
-        .replace(/<\/p>\s*<p>/g, '</p>\n\n<p>')
-
+        // Remove comentários de blocos Gutenberg
+        .replace(/<!--\s*\/?wp:[^>]+-->/g, '')
+        // Remove shortcodes [caption], [gallery], etc.
+        .replace(/\[([^\]]+)\]/g, '')
+        // Remove estilos inline que podem conflitar
+        .replace(/\sstyle="[^"]*"/g, '')
+        // Remove classes WordPress que conflitam (mantém HTML semântico)
+        .replace(/\sclass="wp-block-[^"]*"/g, '')
+        .replace(/\sclass="has-[^"]*"/g, '')
+        // Normalizar espaçamento entre blocos
+        .replace(/<\/p>\s*<p/g, '</p>\n\n<p')
+        .replace(/<\/h[1-6]>\s*<p/g, (m) => m.replace(/\s+/, '\n\n'))
+        .replace(/<\/blockquote>\s*<p/g, '</blockquote>\n\n<p')
         .replace(/\n\s*\n\s*\n/g, '\n\n')
         .trim();
 }

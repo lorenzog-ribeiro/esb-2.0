@@ -4,24 +4,24 @@ import { InsuranceRankingModule } from './insurance/insurance-ranking.module';
 import { DigitalAccountsRankingModule } from './digital-accounts/digital-accounts-ranking.module';
 import { TollPassesRankingModule } from './toll-passes/toll-passes-ranking.module';
 import { CarSubscriptionRankingModule } from './car-subscription/car-subscription-ranking.module';
+import { RealEstateRankingModule } from './real-estate/real-estate-ranking.module';
 
 /**
  * Rankings Module
  *
- * Root module for all ranking features.
+ * Modulo raiz de todos os rankings do ESB 2.0.
  *
- * Currently includes:
- * - Card Machines Ranking
+ * Rankings disponíveis:
+ * - Card Machines Ranking   (card-machines)
+ * - Insurance Ranking       (insurance)
+ * - Digital Accounts Ranking(digital-accounts)
+ * - Toll Passes Ranking     (toll-passes)
+ * - Car Subscription Ranking(car-subscription)
+ * - Real Estate Ranking     (real-estate) — migrado de top_imoveis()
  *
- * Future rankings to be added:
- * - Insurance Ranking
- * - Toll Tags Ranking
- * - Digital Accounts Ranking
- * - Car Subscription Ranking
- *
- * Note: Rankings are SEPARATE from Simulators.
- * - Simulators: Calculate based on user input
- * - Rankings: Show pre-calculated rankings with optional filters
+ * Rankings sao SEPARADOS dos Simuladores:
+ * - Simuladores: calculam com base no input do usuario
+ * - Rankings: exibem listas pre-ranqueadas com filtros opcionais
  */
 @Module({
   imports: [
@@ -30,6 +30,7 @@ import { CarSubscriptionRankingModule } from './car-subscription/car-subscriptio
     DigitalAccountsRankingModule,
     TollPassesRankingModule,
     CarSubscriptionRankingModule,
+    RealEstateRankingModule,
   ],
   exports: [
     CardMachinesRankingModule,
@@ -37,6 +38,7 @@ import { CarSubscriptionRankingModule } from './car-subscription/car-subscriptio
     DigitalAccountsRankingModule,
     TollPassesRankingModule,
     CarSubscriptionRankingModule,
+    RealEstateRankingModule,
   ],
 })
 export class RankingsModule {}

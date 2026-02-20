@@ -6,12 +6,11 @@ import { ComparadorForm } from '@/components/simuladores/comparador-assinatura-c
 import { ComparadorComparison } from '@/components/simuladores/comparador-assinatura-carro/comparador-comparison';
 import { ComparadorBreakdown } from '@/components/simuladores/comparador-assinatura-carro/comparador-breakdown';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, RotateCcw, Info } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import type { ComparadorAssinaturaCarroInput } from '@/lib/schemas/comparador-assinatura-carro.schema';
 
 export default function ComparadorAssinaturaPage() {
-  const { data, isLoading, error, comparar, limpar } =
+  const { data, isLoading, error, comparar } =
     useComparadorAssinaturaCarro();
 
   // Auto-adjust iframe height when data changes
@@ -19,10 +18,6 @@ export default function ComparadorAssinaturaPage() {
 
   const handleSubmit = async (input: ComparadorAssinaturaCarroInput) => {
     await comparar(input);
-  };
-
-  const handleReset = () => {
-    limpar();
   };
 
   return (
@@ -62,26 +57,12 @@ export default function ComparadorAssinaturaPage() {
           </Alert>
         )}
 
-        {/* Form */}
-        {!data && (
-          <ComparadorForm onSubmit={handleSubmit} isLoading={isLoading} />
-        )}
+        {/* Form - sempre visível para permitir ajustar parâmetros */}
+        <ComparadorForm onSubmit={handleSubmit} isLoading={isLoading} />
 
         {/* Results */}
         {data && (
           <div className="space-y-6">
-            {/* Reset Button */}
-            <div className="flex justify-end">
-              <Button
-                variant="outline"
-                onClick={handleReset}
-                className="gap-2"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Nova Comparação
-              </Button>
-            </div>
-
             {/* Comparison Cards */}
             <ComparadorComparison resultado={data} />
 

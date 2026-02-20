@@ -10,8 +10,7 @@ import {
 
 import { AdCard } from "@/components/ads/AdCard";
 import { SidebarPromoCard } from "@/components/sidebar/SidebarPromoCard";
-import { NewsletterCard } from "@/components/sidebar/NewsletterCard";
-import { Calculator, CreditCard } from "lucide-react";
+import { BriefcaseBusiness, Car } from "lucide-react";
 import { getRandomAds, AdItem } from "@/lib/ads";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -149,7 +148,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Coluna do conteúdo */}
                     <div className="lg:col-span-8">
-                        <div className="prose prose-lg prose-gray max-w-none space-y-8">
+                        <div className="formatted-content space-y-0 text-base">
                             {(() => {
                                 const segments = formattedContent.split(/<\/p>/).filter(seg => seg.trim().length > 0);
                                 const middleIndex = Math.floor(segments.length / 2);
@@ -157,7 +156,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                                 const nodes: React.ReactNode[] = [];
                                 segments.forEach((seg, idx) => {
                                     nodes.push(
-                                        <div key={`seg-${idx}`} dangerouslySetInnerHTML={{ __html: `${seg}</p>` }} />
+                                        <div key={`seg-${idx}`} className="wp-content-block" dangerouslySetInnerHTML={{ __html: `${seg}</p>` }} />
                                     );
                                     if (idx === 0 && bannerAds[0]) {
                                         nodes.push(
@@ -189,25 +188,32 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                     {/* Sidebar à direita */}
                     <aside className="lg:col-span-4 grid grid-cols-1 gap-4 grid-flow-dense lg:sticky lg:top-24 h-fit">
                         <SidebarPromoCard
-                            title="Juros Compostos"
-                            description="Calcule rendimentos e compare cenários de investimento."
-                            href="/simuladores/juros-compostos"
-                            icon={<Calculator className="w-5 h-5" />}
+                            title="Simulador de carro por assinatura"
+                            description="Compare planos, custos e encontre a melhor opção para você."
+                            href="/simuladores/comparador-assinatura"
+                            icon={<Car className="w-5 h-5" />}
                             badge="Popular"
                         />
                         <SidebarPromoCard
-                            title="Máquinas de cartão"
-                            description="Veja o ranking e descubra a melhor opção para você."
-                            href="/rankings/maquinas-cartao"
-                            icon={<CreditCard className="w-5 h-5" />}
+                            title="Ranking de carro por assinatura"
+                            description="Veja o ranking e descubra as melhores empresas do mercado."
+                            href="/rankings/assinatura-carro"
+                            icon={<Car className="w-5 h-5" />}
                             badge="Popular"
+                        />
+                        <SidebarPromoCard
+                            title="Consultoria financeira"
+                            description="Conheça nossa consultoria e dê o próximo passo com orientação profissional."
+                            href="https://consultoria.educandoseubolso.blog.br/"
+                            icon={<BriefcaseBusiness className="w-5 h-5" />}
+                            badge="Novo"
+                            external
                         />
                         {sideAds.map((ad) => (
                             <div key={ad.id} className="not-prose">
                                 <AdCard ad={ad} />
                             </div>
                         ))}
-                        <NewsletterCard />
                     </aside>
                 </div>
             </article>

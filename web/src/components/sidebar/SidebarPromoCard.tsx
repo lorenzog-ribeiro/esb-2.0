@@ -8,9 +8,17 @@ interface SidebarPromoCardProps {
   href: string;
   icon?: React.ReactNode;
   badge?: string;
+  external?: boolean;
 }
 
-export function SidebarPromoCard({ title, description, href, icon, badge }: SidebarPromoCardProps) {
+export function SidebarPromoCard({
+  title,
+  description,
+  href,
+  icon,
+  badge,
+  external = false,
+}: SidebarPromoCardProps) {
   return (
     <Card className="bg-card border-border/60 overflow-hidden">
       <CardHeader className="pb-2">
@@ -30,14 +38,25 @@ export function SidebarPromoCard({ title, description, href, icon, badge }: Side
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">{description}</p>
-        <Link href={href} className="block">
-          <Button
-            variant="ghost"
-            className="w-full bg-accent text-accent-foreground hover:bg-accent/90 focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            Acessar
-          </Button>
-        </Link>
+        {external ? (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="block">
+            <Button
+              variant="ghost"
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90 focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Acessar
+            </Button>
+          </a>
+        ) : (
+          <Link href={href} className="block">
+            <Button
+              variant="ghost"
+              className="w-full bg-accent text-accent-foreground hover:bg-accent/90 focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Acessar
+            </Button>
+          </Link>
+        )}
       </CardContent>
     </Card>
   );

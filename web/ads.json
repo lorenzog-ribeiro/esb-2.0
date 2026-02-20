@@ -1,80 +1,14 @@
 [
-    {
-        "id": "ad-001",
-        "name": "Inter Loop Arg2 - Spring Sale",
-        "image_url": "./assets/5691_Display_LoopArg2_31-07-23_7280x90.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/inter_banner_paginas_contas-digitais/"
-    },
-    {
-        "id": "ad-002",
-        "name": "Banner Afiliado XP",
-        "image_url": "./assets/Banner_afiliado_XP.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/xp_investimentos/"
-    },
-    {
-        "id": "ad-003",
-        "name": "Banner BTG iGoal",
-        "image_url": "./assets/Banner_BTG_igoal.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/btg_artigo/"
-    },
-    {
-        "id": "ad-004",
-        "name": "Banner Moderninha Pro Gif",
-        "image_url": "./assets/banner-728-x-90-moderninha-pro.gif",
-        "external_url": "https://educandoseubolso.blog.br/externo/banner_moderninha-pro-2/"
-    },
-    {
-        "id": "ad-005",
-        "name": "Banner ByeCar",
-        "image_url": "./assets/banner-byecar-728-x-90.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/byecar-banner/"
-    },
-    {
-        "id": "ad-006",
-        "name": "Banner Desconto Santander PF",
-        "image_url": "./assets/banner-desconto-santander-pf.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/santader-conta-cartao-igoal/"
-    },
-    {
-        "id": "ad-007",
-        "name": "Banner Minuto Seguros",
-        "image_url": "./assets/banner-leaderboard-minuto-seguros-.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/minuto-seguros-banner-simplificado/"
-    },
-    {
-        "id": "ad-008",
-        "name": "Banner livro educando",
-        "image_url": "./assets/banner-livro-728.webp",
-        "external_url": "https://educandoseubolso.blog.br/livro-educando-seu-bolso/"
-    },
-    {
-        "id": "ad-009",
-        "name": "Banner livro educando 2",
-        "image_url": "./assets/banner-livro-728x90.webp",
-        "external_url": "https://educandoseubolso.blog.br/livro?utm_medium=banner&utm_campaign=livro"
-    },
-    {
-        "id": "ad-010",
-        "name": "Banner Moderninha Smart 2 Jan 2025",
-        "image_url": "./assets/banner-moderninha-smart-2-jan-2025.gif",
-        "external_url": "https://educandoseubolso.blog.br/externo/moderninha-smart-banner/"
-    },
-    {
-        "id": "ad-011",
-        "name": "Banner Localiza Meoo 270x380",
-        "image_url": "./assets/EDUCANDO-SEU-BOLSO_270-x-380.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/localiza_meoo_banner/"
-    },
-    {
-        "id": "ad-012",
-        "name": "Banner Localiza Meoo 728-x-90",
-        "image_url": "./assets/EDUCANDO-SEU-BOLSO_728-x-90-.webp",
-        "external_url": "https://educandoseubolso.blog.br/externo/localiza-meoo_banner_landing-page/"
-    },
-    {
-        "id": "ad-013",
-        "name": "Banner Moderninha Pro",
-        "image_url": "./assets/moderninha-pro-2-banner-conteudo-jan-2025.gif",
-        "external_url": "https://educandoseubolso.blog.br/externo/moderninha-pro-2-banner-conteudo/"
-    }
+  {
+    "id": "ad-001",
+    "name": "Banner Educando Seu Bolso 728x90",
+    "image_url": "/assets/EDUCANDO-SEU-BOLSO_728-x-90-.webp",
+    "external_url": "https://educandoseubolso.blog.br/"
+  },
+  {
+    "id": "ad-002",
+    "name": "Banner Educando Seu Bolso 270x380",
+    "image_url": "/assets/EDUCANDO-SEU-BOLSO_270-x-380.webp",
+    "external_url": "https://educandoseubolso.blog.br/"
+  }
 ]

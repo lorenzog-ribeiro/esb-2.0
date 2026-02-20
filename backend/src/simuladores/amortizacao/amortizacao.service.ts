@@ -9,6 +9,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
 import { EmailService } from '../../email/email.service';
 import { EconomicRatesService } from '../../shared/economic-rates/economic-rates.service';
+import { converterTaxaAnualParaMensal } from '../../shared/math/taxas.util';
 
 @Injectable()
 export class AmortizacaoService {
@@ -64,11 +65,10 @@ export class AmortizacaoService {
   }
 
   private calcularTaxaJurosMensal(taxaAnual: number): number {
-    // Convert annual percentual to effective monthly decimal using original formula:
-    // mensal = (1 + anual/100)^(1/12) - 1
+    // Delega para shared/math/taxas.util.ts (fonte unica de verdade)
+    // Retorna taxa mensal em DECIMAL (ex: 0.0075 para 0.75% a.m.)
     if (!taxaAnual || taxaAnual === 0) return 0;
-    const anualDecimal = taxaAnual / 100;
-    return Math.pow(1 + anualDecimal, 1 / 12) - 1;
+    return converterTaxaAnualParaMensal(taxaAnual).div(100).toNumber();
   }
 
   private computeTotalInterest(

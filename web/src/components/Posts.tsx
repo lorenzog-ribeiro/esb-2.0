@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "./ui/card";
 import { getAuthor, getFeaturedImage, getPostCategories } from "@/lib/api/wordpress";
-import { formatPostDateShort } from "@/utils/wordpress-formatter";
+import { formatPostDateShort, formatExcerptHtml } from "@/utils/wordpress-formatter";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Calendar, User, ArrowRight } from "lucide-react";
@@ -49,14 +49,16 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                 </CardHeader>
 
                 <CardContent className="space-y-2">
-                    <CardDescription className="text-sm md:text-base text-muted-foreground leading-relaxed line-clamp-3 text-justify">
-                        <span dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
+                    <CardDescription className="formatted-content formatted-excerpt text-sm md:text-base text-muted-foreground leading-relaxed line-clamp-3 text-justify">
+                        <span dangerouslySetInnerHTML={{ __html: formatExcerptHtml(post.excerpt?.rendered ?? '') }} />
                     </CardDescription>
 
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <div className="flex items-center space-x-2">
                             <Calendar className="w-4 h-4" />
-                            <span>{postDate}</span>
+                            <time dateTime={post.date} suppressHydrationWarning>
+                                {postDate}
+                            </time>
                         </div>
                     </div>
 

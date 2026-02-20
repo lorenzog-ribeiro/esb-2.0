@@ -28,7 +28,9 @@
     "db:create": "ts-node scripts/create-db.ts",
     "postinstall": "pnpm run prisma:generate",
     "migrate:compile": "tsc scripts/migrate/*.ts --outDir scripts/migrate/dist --module commonjs --target ES2023 --esModuleInterop --skipLibCheck --resolveJsonModule --moduleResolution node --rootDir .",
-    "migrate:run": "node scripts/migrate/dist/scripts/migrate/01-migrate-categories.js && node scripts/migrate/dist/scripts/migrate/02-migrate-authors.js && node scripts/migrate/dist/scripts/migrate/03-migrate-media.js && node scripts/migrate/dist/scripts/migrate/04-migrate-articles.js && node scripts/migrate/dist/scripts/migrate/05-migrate-comments.js"
+    "migrate:run": "node scripts/migrate/dist/scripts/migrate/01-migrate-categories.js && node scripts/migrate/dist/scripts/migrate/02-migrate-authors.js && node scripts/migrate/dist/scripts/migrate/03-migrate-media.js && node scripts/migrate/dist/scripts/migrate/04-migrate-articles.js && node scripts/migrate/dist/scripts/migrate/05-migrate-comments.js",
+    "migrate:assets:dry": "DRY_RUN=true npx ts-node scripts/migrate-assets.ts",
+    "migrate:assets": "DRY_RUN=false npx ts-node scripts/migrate-assets.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
@@ -58,6 +60,7 @@
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@prisma/config": "7.1.0",
+    "@aws-sdk/client-s3": "^3.750.0",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
     "@types/express": "^5.0.0",

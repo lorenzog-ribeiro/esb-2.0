@@ -62,7 +62,7 @@ export default function Header() {
                                 placeholder="Buscar..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                onKeyPress={handleKeyPress}
+                                onKeyDown={handleKeyPress}
                                 className="bg-transparent border-none outline-none text-sm text-foreground placeholder-muted-foreground w-48"
                             />
                             <Button onClick={handleSearch} variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
@@ -126,7 +126,7 @@ export default function Header() {
                                 placeholder="Buscar..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                onKeyPress={handleKeyPress}
+                                onKeyDown={handleKeyPress}
                                 className="flex-1 bg-muted rounded-lg px-3 py-2 text-sm text-foreground placeholder-muted-foreground border-none outline-none"
                                 autoFocus
                             />
@@ -142,20 +142,20 @@ export default function Header() {
                     <div className="lg:hidden border-t border-border/50 py-4">
                         <nav className="flex flex-col space-y-4">
                             <Link
-                                href={"/rankings"}
-                                className="font-bold text-lg text-primary hover:text-accent transition-colors flex items-center gap-2"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                <BarChart2 className="w-5 h-5" />
-                                Rankings
-                            </Link>
-                            <Link
                                 href={"/blog"}
                                 className="font-bold text-lg text-primary hover:text-accent transition-colors flex items-center gap-2"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 <Newspaper className="w-5 h-5" />
                                 Blog
+                            </Link>
+                            <Link
+                                href={"/rankings"}
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors flex items-center gap-2"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                <BarChart2 className="w-5 h-5" />
+                                Rankings
                             </Link>
                             <Link
                                 href={"/simuladores"}
